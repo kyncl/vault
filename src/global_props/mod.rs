@@ -4,6 +4,7 @@ use std::path::Path;
 use crate::utils::crawler::collect_files;
 
 pub mod css;
+pub mod font;
 pub mod js;
 
 pub trait GlobalProperty {

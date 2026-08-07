@@ -4,26 +4,31 @@ use anyhow::Result;
 use colored::*;
 
 use crate::{
-    global_props::{css::GlobalCSS, js::GlobalJS},
+    global_props::{css::GlobalCSS, font::GlobalFonts, js::GlobalJS},
     html::sidebar::SidebarSection,
     page::Page,
 };
 
+#[derive(Default)]
+pub struct Global {
+    pub css: GlobalCSS,
+    pub js: GlobalJS,
+    pub fonts: GlobalFonts,
+}
+
 pub struct Vault {
     pub pages: Vec<Page>,
     pub sidebar_sections: Vec<SidebarSection>,
-    pub global_css: GlobalCSS,
-    pub global_js: GlobalJS,
     pub global_elem: String, // navbar and sidebar
     pub inside_main_elem: String,
+    pub global: Global,
 }
 impl Vault {
     pub fn new() -> Self {
         Self {
             pages: Vec::new(),
             sidebar_sections: Vec::new(),
-            global_css: GlobalCSS::new(),
-            global_js: GlobalJS::new(),
+            global: Global::default(),
             global_elem: String::new(),
             inside_main_elem: String::new(),
         }
@@ -44,12 +49,16 @@ impl Vault {
     }
 
     pub fn global_css(&mut self, css: GlobalCSS) -> &mut Self {
-        self.global_css = css;
+        self.global.css = css;
         self
     }
 
     pub fn global_js(&mut self, js: GlobalJS) -> &mut Self {
-        self.global_js = js;
+        self.global.js = js;
+        self
+    }
+    pub fn global_fonts(&mut self, fonts: GlobalFonts) -> &mut Self {
+        self.global.fonts = fonts;
         self
     }
 

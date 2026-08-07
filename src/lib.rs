@@ -1,3 +1,4 @@
+pub mod cli;
 pub mod global_props;
 pub mod html;
 pub mod page;

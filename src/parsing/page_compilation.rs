@@ -72,13 +72,18 @@ impl Page {
 
         let js = format!(
             "{}\n{}",
-            vault.global_js.compile_cached()?,
-            vault.global_js.compile_lazy(&asset_prefix)?,
+            vault.global.js.compile_cached()?,
+            vault.global.js.compile_lazy(&asset_prefix)?,
         );
         let styling = format!(
             "{}\n{}",
-            vault.global_css.compile_cached()?,
-            vault.global_css.compile_lazy(&asset_prefix)?
+            vault.global.css.compile_cached()?,
+            vault.global.css.compile_lazy(&asset_prefix)?
+        );
+        let fonts = format!(
+            "{}\n{}",
+            vault.global.fonts.compile_cached()?,
+            vault.global.fonts.compile_lazy(&asset_prefix)?
         );
 
         let html = format!(
@@ -92,6 +97,7 @@ impl Page {
                 <link rel="icon" type="image/x-icon" href="./icon.svg">
                 {styling}
                 {js}
+                {fonts}
             </head>
             <body class="jetbrains-mono background foreground">
                 {global_elem}

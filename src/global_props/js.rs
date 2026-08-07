@@ -6,6 +6,7 @@ use std::{
 
 use crate::{global_props::GlobalProperty, parsing::minify::minify_html};
 
+#[derive(Default)]
 pub struct GlobalJS {
     pub cached: Vec<PathBuf>,
     pub lazy: Vec<PathBuf>,

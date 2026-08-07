@@ -1,4 +1,5 @@
 use anyhow::Result;
+use clap::Parser;
 use colored::*;
 use std::{
     fs::{self, create_dir_all},
@@ -6,30 +7,50 @@ use std::{
     path::Path,
 };
 use vault::{
-    global_props::{GlobalProperty, css::GlobalCSS, js::GlobalJS},
+    cli::VaultArgs,
+    global_props::{GlobalProperty, css::GlobalCSS, font::GlobalFonts, js::GlobalJS},
     html::generate_global_elem,
     utils::crawler::collect_files,
     vault::Vault,
 };
 
 fn main() -> Result<()> {
-    let md_root = Path::new("./docs/md");
-    let html_root = Path::new("./docs/html");
+    let args = VaultArgs::parse();
+    let md_root = Path::new(&args.md_path);
+    let html_root = Path::new(&args.html_path);
 
-    let mut g_css = GlobalCSS::new();
-    let mut g_js = GlobalJS::new();
-    g_css.set_global_property(html_root.join("css"), "css")?;
-    g_js.set_global_property(html_root.join("js"), "js")?;
+    let mut css = GlobalCSS::new();
+    let mut js = GlobalJS::new();
+    let mut fonts = GlobalFonts::new();
+    css.set_global_property(html_root.join("css"), "css")?;
+    js.set_global_property(html_root.join("js"), "js")?;
+
+    let fonts_dir = html_root.join("fonts");
+    if fonts_dir.exists() {
+        for entry in std::fs::read_dir(fonts_dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            if path.is_file() {
+                if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
+                    let ext_lower = ext.to_lowercase();
+                    if matches!(ext_lower.as_str(), "ttf" | "woff" | "woff2" | "otf") {
+                        fonts.add_lazy(&path);
+                    }
+                }
+            }
+        }
+    }
 
     let mut md_files = Vec::new();
     collect_files(md_root, &mut md_files, "md")?;
 
     let mut vault = Vault::new();
     vault
-        .global_js(g_js)
-        .global_css(g_css)
+        .global_js(js)
+        .global_css(css)
+        .global_fonts(fonts)
         .inside_main_elem("")
-        .global_elem(generate_global_elem("Title"))
+        .global_elem(generate_global_elem(&args.title))
         .set_pages(md_files, md_root, html_root)?
         .sort_pages()
         .set_neighbors()
