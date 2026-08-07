@@ -14,7 +14,6 @@ pub struct VaultArgs {
     pub md_path: PathBuf,
 
     /// Folder, where will your HTML files live
-    ///
     /// and it's resources
     #[arg(short = 'p', long, default_value = "./docs/html")]
     pub html_path: PathBuf,
