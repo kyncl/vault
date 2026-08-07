@@ -153,16 +153,16 @@
 
 /* --- Theme 11: Purple --- */
 [data-theme="purple"] {
-    --main: oklch(54.6% 0.245 262.881);
-    --main-alt: oklch(44.6% 0.245 262.881);
-    --active-bg: oklch(54.6% 0.245 262.881 / 0.1);
+    --main: oklch(0.4383 0.2179 303.91);
+    --main-alt: oklch(33.83% 0.2179 303.91);
+    --active-bg: oklch(0.4383 0.2179 303.91 / 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
     [data-theme="purple"] {
-        --main: oklch(60.6% 0.245 262.881);
-        --main-alt: oklch(70.6% 0.245 262.881);
-        --active-bg: oklch(60.6% 0.245 262.881 / 0.18);
+        --main: oklch(0.4383 0.2179 303.91);
+        --main-alt: oklch(33.83% 0.2179 303.91);
+        --active-bg: oklch(0.4383 0.2179 303.91 / 0.1);
     }
 }
 

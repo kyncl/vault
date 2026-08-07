@@ -93,7 +93,7 @@ impl Page {
 
         let html = format!(
             r#"<!DOCTYPE html>
-            <html lang="en" {headers}">
+            <html lang="en" {headers}>
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
