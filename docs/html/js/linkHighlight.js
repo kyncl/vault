@@ -1,46 +1,39 @@
-// 1. Code Block Copy Buttons
-function initCodeBlocks() {
-    document.querySelectorAll('pre').forEach((block) => {
-        if (getComputedStyle(block).position === 'static') {
-            block.style.position = 'relative';
+// 3. Active Link Highlighting
+function initActiveLinks() {
+    const currentPathname = window.location.pathname.toLowerCase();
+    const currentSegments = currentPathname.split('/').filter(Boolean);
+
+    document.querySelectorAll('.sidebar-link, .sidebar-title-link').forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+
+        // Use a temporary anchor to safely resolve relative paths (like ../)
+        const parser = document.createElement('a');
+        parser.href = href;
+
+        const linkPathname = parser.pathname.toLowerCase();
+        const linkSegments = linkPathname.split('/').filter(Boolean);
+
+        if (currentSegments.length > 0 && linkSegments.length > 0) {
+            // Compare the last 2 segments (e.g., folder name + filename) to distinguish
+            // between nested/test.html and nested-two/test.html uniquely
+            const currentTail = currentSegments.slice(-2).join('/');
+            const linkTail = linkSegments.slice(-2).join('/');
+
+            // Full path fallback for root-level single files (e.g., index.html)
+            const currentFull = currentSegments.join('/');
+            const linkFull = linkSegments.join('/');
+
+            if (currentFull === linkFull || (currentTail === linkTail && currentTail !== '')) {
+                link.classList.add('active');
+            }
         }
 
-        const copyButton = document.createElement('button');
-        copyButton.type = 'button';
-        copyButton.innerText = 'Copy';
-        Object.assign(copyButton.style, {
-            position: 'absolute',
-            top: '8px',
-            right: '8px',
-            padding: '4px 8px',
-            fontSize: '12px',
-            fontFamily: 'sans-serif',
-            background: '#2d2d2d',
-            color: '#ffffff',
-            border: '1px solid #444',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            zIndex: '10',
-            transition: 'background 0.2s ease'
-        });
-
-        copyButton.addEventListener('mouseenter', () => copyButton.style.background = '#444');
-        copyButton.addEventListener('mouseleave', () => copyButton.style.background = '#2d2d2d');
-
-        copyButton.addEventListener('click', async () => {
-            const codeElement = block.querySelector('code');
-            const textToCopy = codeElement ? codeElement.innerText : block.innerText;
-            try {
-                await navigator.clipboard.writeText(textToCopy);
-                copyButton.innerText = 'Copied!';
-            } catch (err) {
-                console.error('Failed to copy text: ', err);
-                copyButton.innerText = 'Error';
-            } finally {
-                setTimeout(() => copyButton.innerText = 'Copy', 2000);
+        link.addEventListener('click', (e) => {
+            // Prevent default ONLY if it's active and not an internal anchor jump
+            if (link.classList.contains('active') && !link.hash) {
+                e.preventDefault();
             }
         });
-
-        block.appendChild(copyButton);
     });
 }

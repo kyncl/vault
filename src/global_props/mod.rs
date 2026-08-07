@@ -30,7 +30,18 @@ pub trait GlobalProperty {
     fn set_global_property<P: AsRef<Path>>(&mut self, folder: P, extension: &str) -> Result<()> {
         let mut files = vec![];
         collect_files(folder.as_ref(), &mut files, extension)?;
-        files.sort();
+        files.sort_by(|a, b| {
+            let a_name = a.file_name().unwrap_or(a.as_os_str()).to_string_lossy();
+            let b_name = b.file_name().unwrap_or(b.as_os_str()).to_string_lossy();
+            let a_is_lazy = a_name.strip_prefix("lazy__").is_some();
+            let b_is_lazy = b_name.strip_prefix("lazy__").is_some();
+
+            match (a_is_lazy, b_is_lazy) {
+                (false, true) => std::cmp::Ordering::Less,
+                (true, false) => std::cmp::Ordering::Greater,
+                _ => a.cmp(b),
+            }
+        });
         files.iter().for_each(|file| self.add(file));
         Ok(())
     }
