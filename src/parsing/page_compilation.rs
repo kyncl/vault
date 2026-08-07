@@ -1,6 +1,8 @@
+use std::path::Path;
+
 use crate::{
     global_props::GlobalProperty,
-    html::toc::generate_toc,
+    html::{sidebar::SidebarSection, sidebar_items::generate_sidebar_items, toc::generate_toc},
     page::Page,
     parsing::{highlighting::highlight_html_blocks, minify::minify_html},
     utils::slugify::add_heading_ids,
@@ -10,7 +12,7 @@ use anyhow::{Result, anyhow};
 use markdown::{CompileOptions, Constructs, Options, ParseOptions};
 
 impl Page {
-    pub fn render(&self, vault: &Vault) -> Result<String> {
+    pub fn render<P: AsRef<Path>>(&self, vault: &Vault, html_root: P) -> Result<String> {
         let options = Options {
             parse: ParseOptions {
                 constructs: Constructs {
@@ -99,7 +101,16 @@ impl Page {
             inside_main_elem = vault.inside_main_elem,
         );
 
-        let html = minify_html(&highlight_html_blocks(&html));
-        Ok(html)
+        let rel_from_root = self.metadata.html_path.strip_prefix(html_root)?;
+        let depth = rel_from_root.parent().map_or(0, |p| p.components().count());
+        let prefix = "../".repeat(depth);
+
+        let sections_html = generate_sidebar_items(&vault.sidebar_sections, &prefix);
+        let pagination_html = self.get_previous_next_btn(&prefix);
+        let html = html
+            .replace("%__HOME_HREF__%", &prefix)
+            .replace("%__SIDEBAR_SECTIONS__%", &sections_html)
+            .replace("%__PAGINATION__%", &pagination_html);
+        Ok(minify_html(&highlight_html_blocks(&html)))
     }
 }

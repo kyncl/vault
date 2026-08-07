@@ -1,7 +1,10 @@
 use crate::{page::PageMetadata, vault::Vault};
 
 impl Vault {
-    pub fn set_neighbors(&mut self) {
+    pub fn set_neighbors(&mut self) -> &mut Self {
+        if self.pages.is_empty() {
+            eprintln!("Pages are empty. Did you chain correctly?");
+        }
         let total_pages = self.pages.len();
         for i in 0..total_pages {
             let previous = if i > 0 {
@@ -24,6 +27,7 @@ impl Vault {
             self.pages[i].previous = previous;
             self.pages[i].next = next;
         }
+        self
     }
 }
 

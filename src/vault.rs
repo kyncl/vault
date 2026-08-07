@@ -1,13 +1,17 @@
+use std::path::Path;
+
 use anyhow::Result;
 use colored::*;
 
 use crate::{
     global_props::{css::GlobalCSS, js::GlobalJS},
+    html::sidebar::SidebarSection,
     page::Page,
 };
 
 pub struct Vault {
     pub pages: Vec<Page>,
+    pub sidebar_sections: Vec<SidebarSection>,
     pub global_css: GlobalCSS,
     pub global_js: GlobalJS,
     pub global_elem: String, // navbar and sidebar
@@ -17,6 +21,7 @@ impl Vault {
     pub fn new() -> Self {
         Self {
             pages: Vec::new(),
+            sidebar_sections: Vec::new(),
             global_css: GlobalCSS::new(),
             global_js: GlobalJS::new(),
             global_elem: String::new(),
@@ -38,34 +43,35 @@ impl Vault {
         self
     }
 
-    pub fn global_css(mut self, css: GlobalCSS) -> Self {
+    pub fn global_css(&mut self, css: GlobalCSS) -> &mut Self {
         self.global_css = css;
         self
     }
 
-    pub fn global_js(mut self, js: GlobalJS) -> Self {
+    pub fn global_js(&mut self, js: GlobalJS) -> &mut Self {
         self.global_js = js;
         self
     }
 
-    pub fn global_elem(mut self, elem: impl Into<String>) -> Self {
+    pub fn global_elem(&mut self, elem: impl Into<String>) -> &mut Self {
         self.global_elem = elem.into();
         self
     }
 
-    pub fn inside_main_elem(mut self, elem: impl Into<String>) -> Self {
+    pub fn inside_main_elem(&mut self, elem: impl Into<String>) -> &mut Self {
         self.inside_main_elem = elem.into();
         self
     }
 
-    pub fn render_all(&mut self) -> Result<()> {
+    pub fn render_all<P: AsRef<Path>>(&mut self, html_root: P) -> Result<()> {
+        println!("Compiling MD files...");
         let mut rendered_htmls = Vec::with_capacity(self.pages.len());
         for page in &self.pages {
             println!(
                 "Rendering: {}",
                 page.metadata.md_path.display().to_string().underline()
             );
-            rendered_htmls.push(page.render(self)?);
+            rendered_htmls.push(page.render(self, &html_root)?);
         }
         for (page, html) in self.pages.iter_mut().zip(rendered_htmls) {
             page.html = Some(html);
@@ -73,7 +79,10 @@ impl Vault {
         Ok(())
     }
 
-    pub fn sort_pages(&mut self) {
+    pub fn sort_pages(&mut self) -> &mut Self {
+        if self.pages.is_empty() {
+            eprintln!("Pages are empty. Did you chain correctly?");
+        }
         self.pages.sort_by(|a, b| {
             let is_priority = |name: &str| {
                 let lower = name.to_lowercase();
@@ -101,5 +110,6 @@ impl Vault {
                 (None, None) => unreachable!(),
             }
         });
+        self
     }
 }
