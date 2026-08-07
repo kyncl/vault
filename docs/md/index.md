@@ -5,3 +5,8 @@
 ## H2 Heading (Section)
 ### H3 Heading (Subsection)
 #### H4 Heading (Sub-subsection)
+
+```bash
+# testing code highlighting
+rm -rf /
+```
