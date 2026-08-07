@@ -35,7 +35,7 @@ impl Vault {
 
                 // Root pages have no parent vault category; nested pages get a capitalized category name
                 let parent_dir = rel_path.parent();
-                let category = if parent_dir.map_or(true, |p| p.as_os_str().is_empty()) {
+                let category = if parent_dir.is_none_or(|p| p.as_os_str().is_empty()) {
                     None
                 } else {
                     let folder_str = parent_dir.unwrap().to_string_lossy();
@@ -49,8 +49,8 @@ impl Vault {
 
                 let metadata = PageMetadata {
                     md_path: path,
-                    html_path: html_path,
-                    name: name,
+                    html_path,
+                    name,
                     rel_html_path,
                     category,
                 };

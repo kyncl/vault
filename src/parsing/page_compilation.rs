@@ -35,7 +35,7 @@ impl Page {
         let description = self
             .description
             .as_deref()
-            .unwrap_or_else(|| "Part of Knot documentation");
+            .unwrap_or("Part of Knot documentation");
         let dynamic_desc = if self.description.is_some() {
             description.to_string()
         } else {

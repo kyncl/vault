@@ -30,12 +30,12 @@ fn main() -> Result<()> {
         for entry in std::fs::read_dir(fonts_dir)? {
             let entry = entry?;
             let path = entry.path();
-            if path.is_file() {
-                if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
-                    let ext_lower = ext.to_lowercase();
-                    if matches!(ext_lower.as_str(), "ttf" | "woff" | "woff2" | "otf") {
-                        fonts.add_lazy(&path);
-                    }
+            if path.is_file()
+                && let Some(ext) = path.extension().and_then(|e| e.to_str())
+            {
+                let ext_lower = ext.to_lowercase();
+                if matches!(ext_lower.as_str(), "ttf" | "woff" | "woff2" | "otf") {
+                    fonts.add_lazy(&path);
                 }
             }
         }

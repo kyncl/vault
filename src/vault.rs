@@ -122,3 +122,9 @@ impl Vault {
         self
     }
 }
+
+impl Default for Vault {
+    fn default() -> Self {
+        Self::new()
+    }
+}

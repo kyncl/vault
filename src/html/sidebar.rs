@@ -9,14 +9,13 @@ pub const SIDEBAR_ICON: &str = r#"
 "#;
 
 pub fn generate_sidebar() -> String {
-    format!(
-        r#"
+    r#"
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
         <aside class="sidebar">
             %__SIDEBAR_SECTIONS__%
         </aside>
         "#
-    )
+    .to_string()
 }
 
 pub struct SidebarSection {
