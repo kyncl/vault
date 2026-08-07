@@ -2,7 +2,7 @@ use std::path::Path;
 
 use crate::{
     global_props::GlobalProperty,
-    html::{sidebar_items::generate_sidebar_items, toc::generate_toc},
+    html::{sidebar_items::generate_sidebar_items, styling::Style, toc::generate_toc},
     page::Page,
     parsing::{highlighting::highlight_html_blocks, minify::minify_html},
     utils::slugify::add_heading_ids,
@@ -12,7 +12,12 @@ use anyhow::{Result, anyhow};
 use markdown::{CompileOptions, Constructs, Options, ParseOptions};
 
 impl Page {
-    pub fn render<P: AsRef<Path>>(&self, vault: &Vault, html_root: P) -> Result<String> {
+    pub fn render<P: AsRef<Path>>(
+        &self,
+        vault: &Vault,
+        html_root: P,
+        style: &Style,
+    ) -> Result<String> {
         let options = Options {
             parse: ParseOptions {
                 constructs: Constructs {
@@ -88,7 +93,7 @@ impl Page {
 
         let html = format!(
             r#"<!DOCTYPE html>
-            <html lang="en">
+            <html lang="en" {headers}">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -119,6 +124,7 @@ impl Page {
             title = self.metadata.name,
             global_elem = vault.global_elem,
             inside_main_elem = vault.inside_main_elem,
+            headers = style.make_header()
         );
 
         let rel_from_root = self.metadata.html_path.strip_prefix(html_root)?;

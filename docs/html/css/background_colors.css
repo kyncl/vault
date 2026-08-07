@@ -1,0 +1,70 @@
+/* --- Background Theme: Standard (Balanced Dark) --- */
+:root,
+[data-background-theme="standard"] {
+    --background: #ffffff;
+    --card-bg: #f4f4f5;
+    --border: #e4e4e7;
+    --accent: #e4e4e7;
+}
+
+@media (prefers-color-scheme: dark) {
+
+    :root,
+    [data-background-theme="standard"] {
+        --background: #121212;
+        --card-bg: #1e1e1e;
+        --border: #2c2c2c;
+        --accent: #2c2c2c;
+    }
+}
+
+/* --- Background Theme: Comfy (Soft Dark Gray) --- */
+[data-background-theme="comfy"] {
+    --background: #f4f4f5;
+    --card-bg: #ffffff;
+    --border: #e4e4e7;
+    --accent: #e4e4e7;
+}
+
+@media (prefers-color-scheme: dark) {
+    [data-background-theme="comfy"] {
+        --background: #18181b;
+        --card-bg: #27272a;
+        --border: #3f3f46;
+        --accent: #3f3f46;
+    }
+}
+
+/* --- Background Theme: Deep Black (Pure Black) --- */
+[data-background-theme="deep-black"] {
+    --background: #ffffff;
+    --card-bg: #f4f4f5;
+    --border: #e4e4e7;
+    --accent: #e4e4e7;
+}
+
+@media (prefers-color-scheme: dark) {
+    [data-background-theme="deep-black"] {
+        --background: #000000;
+        --card-bg: #0d0d0d;
+        --border: #222222;
+        --accent: #222222;
+    }
+}
+
+/* --- Background Theme: Zen (Distinct Medium Charcoal) --- */
+[data-background-theme="zen"] {
+    --background: #ffffff;
+    --card-bg: #f4f4f5;
+    --border: #e4e4e7;
+    --accent: #e4e4e7;
+}
+
+@media (prefers-color-scheme: dark) {
+    [data-background-theme="zen"] {
+        --background: #242424;
+        --card-bg: #303030;
+        --border: #444444;
+        --accent: #444444;
+    }
+}

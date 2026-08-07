@@ -4,6 +4,7 @@ pub mod general;
 pub mod navbar;
 pub mod sidebar;
 pub mod sidebar_items;
+pub mod styling;
 pub mod toc;
 
 pub fn generate_global_elem(title: &str) -> String {

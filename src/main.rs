@@ -9,7 +9,7 @@ use std::{
 use vault::{
     cli::VaultArgs,
     global_props::{GlobalProperty, css::GlobalCSS, font::GlobalFonts, js::GlobalJS},
-    html::generate_global_elem,
+    html::{generate_global_elem, styling},
     utils::crawler::collect_files,
     vault::Vault,
 };
@@ -24,6 +24,7 @@ fn main() -> Result<()> {
     let mut fonts = GlobalFonts::new();
     css.set_global_property(html_root.join("css"), "css")?;
     js.set_global_property(html_root.join("js"), "js")?;
+    let style = styling::Style::new()?;
 
     let fonts_dir = html_root.join("fonts");
     if fonts_dir.exists() {
@@ -55,7 +56,7 @@ fn main() -> Result<()> {
         .sort_pages()
         .set_neighbors()
         .set_sidebar_sections()
-        .render_all(html_root)?;
+        .render_all(html_root, &style)?;
 
     println!("Creating HTML files...");
     for data in &vault.pages {

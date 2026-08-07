@@ -18,7 +18,7 @@ function initCodeBlocks() {
             background: '#2d2d2d',
             color: '#ffffff',
             border: '1px solid #444',
-            borderRadius: '4px',
+            borderRadius: 'var(--radius-sm)',
             cursor: 'pointer',
             zIndex: '10',
             transition: 'background 0.2s ease'
