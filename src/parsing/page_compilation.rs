@@ -2,7 +2,7 @@ use std::path::Path;
 
 use crate::{
     global_props::GlobalProperty,
-    html::{sidebar::SidebarSection, sidebar_items::generate_sidebar_items, toc::generate_toc},
+    html::{sidebar_items::generate_sidebar_items, toc::generate_toc},
     page::Page,
     parsing::{highlighting::highlight_html_blocks, minify::minify_html},
     utils::slugify::add_heading_ids,
@@ -43,13 +43,27 @@ impl Page {
         };
 
         let asset_depth = self.metadata.rel_html_path.matches('/').count();
-        let depth = self.metadata.rel_html_path.matches('/').count() + 1;
-
         let asset_prefix = "../".repeat(asset_depth);
-        let prefix = "../".repeat(depth);
 
-        let cleaned_path = self.metadata.rel_html_path.replace(".html", ".md");
-        let to_md = format!("{}md/{}", prefix, cleaned_path);
+        let html_dir = self
+            .metadata
+            .html_path
+            .parent()
+            .unwrap_or(std::path::Path::new(""));
+        let depth_to_root = html_dir
+            .components()
+            .filter(|c| matches!(c, std::path::Component::Normal(_)))
+            .count();
+
+        let back_to_root = "../".repeat(depth_to_root);
+        let clean_md_path: std::path::PathBuf = self
+            .metadata
+            .md_path
+            .components()
+            .filter(|c| matches!(c, std::path::Component::Normal(_)))
+            .collect();
+        let md_path_str = clean_md_path.to_string_lossy().replace('\\', "/");
+        let to_md = format!("{}{}", back_to_root, md_path_str);
 
         let raw_docs = markdown::to_html_with_options(&self.text, &options)
             .map_err(|e| anyhow!("Error found during markdown parsing. Cause: {e}"))?;

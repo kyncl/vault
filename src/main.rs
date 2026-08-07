@@ -1,4 +1,5 @@
 use anyhow::Result;
+use colored::*;
 use std::{
     fs::{self, create_dir_all},
     io::Write,
@@ -52,5 +53,17 @@ fn main() -> Result<()> {
         }
     }
 
+    if html_root.join("index.html").exists() {
+        println!(
+            "Compilation complete.\nYou can check the homepage on: {}",
+            html_root
+                .join("index.html")
+                .display()
+                .to_string()
+                .underline()
+        );
+    } else {
+        println!("Compilation complete.");
+    }
     Ok(())
 }
