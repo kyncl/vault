@@ -51,7 +51,11 @@ impl GlobalProperty for GlobalCSS {
             css.push('\n');
         }
         let css = format!("<style>{css}</style>");
-        Ok(minify_html(&css))
+        if !css.is_empty() {
+            Ok(minify_html(&css))
+        } else {
+            Ok(String::new())
+        }
     }
 
     fn compile_lazy(&self, asset_prefix: &str) -> Result<String> {
@@ -74,6 +78,10 @@ impl GlobalProperty for GlobalCSS {
             ));
             html_links.push('\n');
         }
-        Ok(minify_html(&html_links))
+        if !html_links.is_empty() {
+            Ok(minify_html(&html_links))
+        } else {
+            Ok(String::new())
+        }
     }
 }

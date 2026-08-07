@@ -53,7 +53,11 @@ impl GlobalProperty for GlobalJS {
 
         let js = format!("<script>{js}</script>");
         let minified = minify_html(&js);
-        Ok(minified)
+        if !minified.is_empty() {
+            Ok(minified)
+        } else {
+            Ok(String::new())
+        }
     }
 
     fn compile_lazy(&self, asset_prefix: &str) -> Result<String> {
@@ -73,6 +77,10 @@ impl GlobalProperty for GlobalJS {
             html_scripts.push_str(&format!(r#"<script src="{}" defer></script>"#, web_path));
             html_scripts.push('\n');
         }
-        Ok(minify_html(&html_scripts))
+        if !html_scripts.is_empty() {
+            Ok(minify_html(&html_scripts))
+        } else {
+            Ok(String::new())
+        }
     }
 }

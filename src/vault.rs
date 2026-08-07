@@ -1,0 +1,105 @@
+use anyhow::Result;
+use colored::*;
+
+use crate::{
+    global_props::{css::GlobalCSS, js::GlobalJS},
+    page::Page,
+};
+
+pub struct Vault {
+    pub pages: Vec<Page>,
+    pub global_css: GlobalCSS,
+    pub global_js: GlobalJS,
+    pub global_elem: String, // navbar and sidebar
+    pub inside_main_elem: String,
+}
+impl Vault {
+    pub fn new() -> Self {
+        Self {
+            pages: Vec::new(),
+            global_css: GlobalCSS::new(),
+            global_js: GlobalJS::new(),
+            global_elem: String::new(),
+            inside_main_elem: String::new(),
+        }
+    }
+
+    pub fn get_headers(&self) -> Vec<(String, usize)> {
+        vec![]
+    }
+
+    pub fn add_file(&mut self, page: Page) -> &mut Self {
+        self.pages.push(page);
+        self
+    }
+
+    pub fn pages(mut self, pages: Vec<Page>) -> Self {
+        self.pages = pages;
+        self
+    }
+
+    pub fn global_css(mut self, css: GlobalCSS) -> Self {
+        self.global_css = css;
+        self
+    }
+
+    pub fn global_js(mut self, js: GlobalJS) -> Self {
+        self.global_js = js;
+        self
+    }
+
+    pub fn global_elem(mut self, elem: impl Into<String>) -> Self {
+        self.global_elem = elem.into();
+        self
+    }
+
+    pub fn inside_main_elem(mut self, elem: impl Into<String>) -> Self {
+        self.inside_main_elem = elem.into();
+        self
+    }
+
+    pub fn render_all(&mut self) -> Result<()> {
+        let mut rendered_htmls = Vec::with_capacity(self.pages.len());
+        for page in &self.pages {
+            println!(
+                "Rendering: {}",
+                page.metadata.md_path.display().to_string().underline()
+            );
+            rendered_htmls.push(page.render(self)?);
+        }
+        for (page, html) in self.pages.iter_mut().zip(rendered_htmls) {
+            page.html = Some(html);
+        }
+        Ok(())
+    }
+
+    pub fn sort_pages(&mut self) {
+        self.pages.sort_by(|a, b| {
+            let is_priority = |name: &str| {
+                let lower = name.to_lowercase();
+                lower == "index" || lower == "overview"
+            };
+
+            let a_prio = is_priority(&a.metadata.name);
+            let b_prio = is_priority(&b.metadata.name);
+
+            if a.metadata.category == b.metadata.category {
+                if a_prio && !b_prio {
+                    return std::cmp::Ordering::Less;
+                } else if !a_prio && b_prio {
+                    return std::cmp::Ordering::Greater;
+                } else {
+                    return a.metadata.name.cmp(&b.metadata.name);
+                }
+            }
+
+            // Sort by category (None/root comes first)
+            match (&a.metadata.category, &b.metadata.category) {
+                (None, Some(_)) => std::cmp::Ordering::Less,
+                (Some(_), None) => std::cmp::Ordering::Greater,
+                (Some(c1), Some(c2)) => c1.cmp(c2),
+                (None, None) => unreachable!(),
+            }
+        });
+    }
+}
