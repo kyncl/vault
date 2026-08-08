@@ -86,7 +86,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@cargo-tarpaulin
       - run: cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         with:
           files: ./cobertura.xml
 
