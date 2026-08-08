@@ -30,9 +30,9 @@ impl Style {
     }
 
     pub fn make_header(&self) -> String {
-        let theme = self.main_col.to_string();
-        let background = self.background_col.to_string();
-        let border_radius = self.radius.to_string();
+        let theme = self.main_col.as_str();
+        let background = self.background_col.as_str();
+        let border_radius = self.radius.as_str();
         format!(
             r#" data-theme="{theme}" data-background-theme="{background}" data-radius-theme="{border_radius}" "#
         )

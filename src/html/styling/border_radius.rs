@@ -18,13 +18,12 @@ impl RadiusTheme {
         ]
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn as_str(&self) -> &str {
         match self {
             RadiusTheme::Standard => "standard",
             RadiusTheme::Brutalist => "brutalist",
             RadiusTheme::Rounded => "rounded",
         }
-        .to_string()
     }
 }
 

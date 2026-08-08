@@ -19,14 +19,13 @@ impl BackgroundTheme {
             BackgroundTheme::Zen,
         ]
     }
-    pub fn to_string(&self) -> String {
+    pub fn as_str(&self) -> &str {
         match self {
             BackgroundTheme::Standard => "standard",
             BackgroundTheme::Comfy => "comfy",
             BackgroundTheme::DeepBlack => "deep-black",
             BackgroundTheme::Zen => "zen",
         }
-        .to_string()
     }
 }
 

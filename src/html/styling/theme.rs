@@ -67,7 +67,7 @@ impl ColorTheme {
             ColorTheme::Pink,
         ]
     }
-    pub fn to_string(&self) -> String {
+    pub fn as_str(&self) -> &str {
         match self {
             ColorTheme::Crimson => "crimson",
             ColorTheme::OrangeRed => "orange-red",
@@ -86,7 +86,6 @@ impl ColorTheme {
             ColorTheme::Fuchsia => "fuchsia",
             ColorTheme::Pink => "pink",
         }
-        .to_string()
     }
 }
 
