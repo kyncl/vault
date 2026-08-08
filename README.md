@@ -4,7 +4,16 @@ It automatically transforms a directory of Markdown files into a fully responsiv
 styled documentation site complete with automatic sidebar navigation, category grouping, 
 syntax highlighting, and dynamic previous/next page buttons.
 
----
+[![Build Status](https://github.com/kyncl/vault/workflows/CI/badge.svg?style=for-the-badge)](https://github.com/kyncl/vault/actions)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
+[![Rust](https://img.shields.io/badge/Made%20with-Rust-orange.svg?style=for-the-badge)](https://www.rust-lang.org/)
+![supported platforms](https://img.shields.io/badge/platform-linux%20|%20windows%20|%20macos-success?style=for-the-badge)
+![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg?style=for-the-badge)
+
+[![Open Issues](https://img.shields.io/github/issues/kyncl/vault?style=for-the-badge)](https://github.com/kyncl/vault/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/kyncl/vault?style=for-the-badge)](https://github.com/kyncl/vault)
 
 ## Features
 
