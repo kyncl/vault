@@ -82,40 +82,36 @@ pub fn prompt_background_selection(selected_color: &ColorTheme) -> Option<Backgr
     let options: Vec<ColoredBackground> = BackgroundTheme::all()
         .into_iter()
         .map(|theme| {
-            let is_recommended = match (selected_color, theme) {
+            let is_recommended = matches!(
+                (selected_color, theme),
                 (
                     ColorTheme::Green | ColorTheme::Emerald | ColorTheme::Lime,
                     BackgroundTheme::Olive,
-                ) => true,
-                (
+                ) | (
                     ColorTheme::Blue | ColorTheme::Cyan | ColorTheme::Teal | ColorTheme::Sky,
                     BackgroundTheme::Mist,
-                ) => true,
-                (
+                ) | (
                     ColorTheme::Purple
-                    | ColorTheme::Fuchsia
-                    | ColorTheme::Pink
-                    | ColorTheme::Indigo
-                    | ColorTheme::Violet,
+                        | ColorTheme::Fuchsia
+                        | ColorTheme::Pink
+                        | ColorTheme::Indigo
+                        | ColorTheme::Violet,
                     BackgroundTheme::Mauve,
-                ) => true,
-                (
+                ) | (
                     ColorTheme::Crimson | ColorTheme::Rose | ColorTheme::Red,
                     BackgroundTheme::Taupe,
-                ) => true,
-                (
+                ) | (
                     ColorTheme::Orange
-                    | ColorTheme::OrangeRed
-                    | ColorTheme::Yellow
-                    | ColorTheme::Amber,
+                        | ColorTheme::OrangeRed
+                        | ColorTheme::Yellow
+                        | ColorTheme::Amber,
                     BackgroundTheme::Stone,
-                ) => true,
-                _ => false,
-            };
+                )
+            );
 
             ColoredBackground {
                 theme,
-                recommendate: if is_recommended { true } else { false },
+                recommendate: is_recommended,
             }
         })
         .collect();
