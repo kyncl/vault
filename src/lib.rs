@@ -1,4 +1,5 @@
 pub mod cli;
+pub mod features;
 pub mod global_props;
 pub mod html;
 pub mod page;
