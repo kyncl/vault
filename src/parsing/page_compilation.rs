@@ -121,7 +121,15 @@ impl Page {
                 </div>
             </body>
             </html>"#,
-            title = self.metadata.name,
+            title = if self.metadata.name.to_lowercase() == "index" {
+                if let Some(cat) = &self.metadata.category {
+                    cat
+                } else {
+                    "Homepage"
+                }
+            } else {
+                &self.metadata.name
+            },
             global_elem = vault.global_elem,
             inside_main_elem = vault.inside_main_elem,
             headers = style.make_header()

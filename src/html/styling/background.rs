@@ -1,3 +1,4 @@
+use crate::html::styling::theme::ColorTheme;
 use colored::Colorize;
 use inquire::Select;
 use std::fmt;
@@ -8,6 +9,11 @@ pub enum BackgroundTheme {
     Comfy,
     DeepBlack,
     Zen,
+    Stone,
+    Mauve,
+    Olive,
+    Mist,
+    Taupe,
 }
 
 impl BackgroundTheme {
@@ -17,50 +23,107 @@ impl BackgroundTheme {
             BackgroundTheme::Comfy,
             BackgroundTheme::DeepBlack,
             BackgroundTheme::Zen,
+            BackgroundTheme::Stone,
+            BackgroundTheme::Mauve,
+            BackgroundTheme::Olive,
+            BackgroundTheme::Mist,
+            BackgroundTheme::Taupe,
         ]
     }
+
     pub fn as_str(&self) -> &str {
         match self {
             BackgroundTheme::Standard => "standard",
             BackgroundTheme::Comfy => "comfy",
             BackgroundTheme::DeepBlack => "deep-black",
             BackgroundTheme::Zen => "zen",
+            BackgroundTheme::Stone => "stone",
+            BackgroundTheme::Mauve => "mauve",
+            BackgroundTheme::Olive => "olive",
+            BackgroundTheme::Mist => "mist",
+            BackgroundTheme::Taupe => "taupe",
         }
     }
 }
 
-pub struct ColoredBackground(BackgroundTheme);
+pub struct ColoredBackground {
+    theme: BackgroundTheme,
+    recommendate: bool,
+}
+
 impl fmt::Display for ColoredBackground {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let formatted = match self.0 {
-            BackgroundTheme::Standard => " Standard   (Light: #fff | Dark: #121212) "
-                .white()
-                .on_truecolor(18, 18, 18),
-            BackgroundTheme::Comfy => " Comfy      (Light: #f4f | Dark: #18181b) "
-                .white()
-                .on_truecolor(24, 24, 27),
-            BackgroundTheme::DeepBlack => " Deep Black (Light: #fff | Dark: #000000) "
-                .white()
-                .on_truecolor(0, 0, 0),
-            BackgroundTheme::Zen => " Zen Dark   (Light: #fff | Dark: #242424) "
-                .white()
-                .on_truecolor(36, 36, 36),
+        let (name, bg_rgb) = match self.theme {
+            BackgroundTheme::Standard => (" Standard    ", (18, 18, 18)),
+            BackgroundTheme::Comfy => (" Comfy       ", (24, 24, 27)),
+            BackgroundTheme::DeepBlack => (" Deep Black  ", (0, 0, 0)),
+            BackgroundTheme::Zen => (" Zen         ", (36, 36, 36)),
+            BackgroundTheme::Stone => (" Stone       ", (28, 25, 23)),
+            BackgroundTheme::Mauve => (" Mauve       ", (29, 22, 30)),
+            BackgroundTheme::Olive => (" Olive       ", (29, 29, 22)),
+            BackgroundTheme::Mist => (" Mist        ", (22, 27, 29)),
+            BackgroundTheme::Taupe => (" Taupe       ", (29, 24, 22)),
         };
 
-        write!(f, "{}", formatted)
+        let mut display_text = format!("{} (Dark: {})", name, self.theme.as_str());
+
+        if self.recommendate {
+            display_text = format!("{} ➔ Recommended for your color", display_text);
+        }
+
+        let colored = display_text
+            .white()
+            .on_truecolor(bg_rgb.0, bg_rgb.1, bg_rgb.2);
+        write!(f, "{}", colored)
     }
 }
 
-pub fn prompt_background_selection() -> Option<BackgroundTheme> {
+pub fn prompt_background_selection(selected_color: &ColorTheme) -> Option<BackgroundTheme> {
     let options: Vec<ColoredBackground> = BackgroundTheme::all()
         .into_iter()
-        .map(ColoredBackground)
+        .map(|theme| {
+            let is_recommended = match (selected_color, theme) {
+                (
+                    ColorTheme::Green | ColorTheme::Emerald | ColorTheme::Lime,
+                    BackgroundTheme::Olive,
+                ) => true,
+                (
+                    ColorTheme::Blue | ColorTheme::Cyan | ColorTheme::Teal | ColorTheme::Sky,
+                    BackgroundTheme::Mist,
+                ) => true,
+                (
+                    ColorTheme::Purple
+                    | ColorTheme::Fuchsia
+                    | ColorTheme::Pink
+                    | ColorTheme::Indigo
+                    | ColorTheme::Violet,
+                    BackgroundTheme::Mauve,
+                ) => true,
+                (
+                    ColorTheme::Crimson | ColorTheme::Rose | ColorTheme::Red,
+                    BackgroundTheme::Taupe,
+                ) => true,
+                (
+                    ColorTheme::Orange
+                    | ColorTheme::OrangeRed
+                    | ColorTheme::Yellow
+                    | ColorTheme::Amber,
+                    BackgroundTheme::Stone,
+                ) => true,
+                _ => false,
+            };
+
+            ColoredBackground {
+                theme,
+                recommendate: if is_recommended { true } else { false },
+            }
+        })
         .collect();
 
     let ans = Select::new("Select your background profile", options).prompt();
 
     match ans {
-        Ok(choice) => Some(choice.0),
+        Ok(choice) => Some(choice.theme),
         Err(_) => {
             println!("No background selected.");
             None

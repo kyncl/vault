@@ -18,9 +18,11 @@ based on your folder structure, prioritizing key files like `index` or `overview
 - **Syntax Highlighting:** Built-in code block styling and syntax 
 highlighting for technical documentation.
 - **Fully Customizable Styling Engine:** Change the look and feel of your docs using custom CLI:
-  - **16 Color Themes:** Choose from Crimson, Orange, Emerald, Teal, Cyan, Blue, Violet, Fuchsia, Pink, and more.
+  - **20 Color Themes:** Choose from Crimson, Orange, Emerald, Teal, Cyan, Blue, Violet, Fuchsia, Pink, and more. 
+  Still not enough? You can custom pick your own HEX code, which 
+  will be used as main theme color.
   - **Responsive Background Profiles:** Automatically adapt to system light/dark mode with options
-  like **Standard**, **Comfy**, **Deep Black**, and **Zen**.
+  like **Standard**, **Comfy**, **Deep Black**, **Zen**, and more.
   - **Border-Radius Styles:** Switch between **Standard** (8px–2px gradient),
   **Brutalist** (sharp 0px edges), and **Rounded** (extra smooth 16px–4px gradient).
 - **Responsive & Theme-Aware:** Mobile-friendly layout featuring a toggleable 

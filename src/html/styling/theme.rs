@@ -1,7 +1,8 @@
 use colored::*;
+use inquire::{Select, Text, validator::Validation};
 use std::fmt::{self, Display};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ColorTheme {
     Crimson,
     OrangeRed,
@@ -16,30 +17,47 @@ pub enum ColorTheme {
     Purple,
     Rose,
     Silver,
-    Violet,
     Fuchsia,
     Pink,
+    Amber,
+    Lime,
+    Red,
+    Sky,
+    Violet,
+    Custom(String),
 }
+
 impl Display for ColorTheme {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = format!("{:?}", self);
         let colored_name = match self {
-            ColorTheme::Crimson => name.truecolor(254, 36, 40),
-            ColorTheme::OrangeRed => name.truecolor(240, 100, 70),
-            ColorTheme::Orange => name.truecolor(255, 165, 0),
-            ColorTheme::Yellow => name.truecolor(250, 200, 50),
-            ColorTheme::Green => name.truecolor(100, 220, 130),
-            ColorTheme::Emerald => name.truecolor(80, 200, 150),
-            ColorTheme::Teal => name.truecolor(70, 180, 180),
-            ColorTheme::Cyan => name.truecolor(0, 255, 255),
-            ColorTheme::Blue => name.truecolor(100, 150, 255),
-            ColorTheme::Indigo => name.truecolor(130, 100, 240),
-            ColorTheme::Purple => name.truecolor(180, 100, 220),
-            ColorTheme::Rose => name.truecolor(240, 120, 150),
-            ColorTheme::Silver => name.truecolor(230, 230, 230),
-            ColorTheme::Violet => name.truecolor(200, 130, 255),
-            ColorTheme::Fuchsia => name.truecolor(255, 80, 200),
-            ColorTheme::Pink => name.truecolor(255, 150, 180),
+            ColorTheme::Crimson => name.truecolor(251, 44, 54),
+            ColorTheme::OrangeRed => name.truecolor(245, 73, 0),
+            ColorTheme::Orange => name.truecolor(225, 113, 0),
+            ColorTheme::Yellow => name.truecolor(208, 135, 0),
+            ColorTheme::Green => name.truecolor(94, 165, 0),
+            ColorTheme::Emerald => name.truecolor(0, 166, 62),
+            ColorTheme::Teal => name.truecolor(0, 153, 102),
+            ColorTheme::Cyan => name.truecolor(0, 150, 137),
+            ColorTheme::Blue => name.truecolor(0, 146, 184),
+            ColorTheme::Indigo => name.truecolor(113, 91, 255),
+            ColorTheme::Purple => name.truecolor(110, 17, 176),
+            ColorTheme::Rose => name.truecolor(236, 0, 63),
+            ColorTheme::Silver => name.truecolor(249, 250, 251),
+            ColorTheme::Fuchsia => name.truecolor(200, 0, 222),
+            ColorTheme::Pink => name.truecolor(230, 0, 118),
+            ColorTheme::Amber => name.truecolor(151, 60, 0),
+            ColorTheme::Lime => name.truecolor(124, 207, 0),
+            ColorTheme::Red => name.truecolor(159, 7, 18),
+            ColorTheme::Sky => name.truecolor(0, 89, 138),
+            ColorTheme::Violet => name.truecolor(93, 14, 192),
+            ColorTheme::Custom(hex) => {
+                if hex.is_empty() {
+                    "Custom HEX".underline()
+                } else {
+                    format!("Custom ({hex})").underline()
+                }
+            }
         };
 
         write!(f, "{}", colored_name)
@@ -62,11 +80,17 @@ impl ColorTheme {
             ColorTheme::Purple,
             ColorTheme::Rose,
             ColorTheme::Silver,
-            ColorTheme::Violet,
             ColorTheme::Fuchsia,
             ColorTheme::Pink,
+            ColorTheme::Amber,
+            ColorTheme::Lime,
+            ColorTheme::Red,
+            ColorTheme::Sky,
+            ColorTheme::Violet,
+            ColorTheme::Custom(String::new()),
         ]
     }
+
     pub fn as_str(&self) -> &str {
         match self {
             ColorTheme::Crimson => "crimson",
@@ -82,21 +106,59 @@ impl ColorTheme {
             ColorTheme::Purple => "purple",
             ColorTheme::Rose => "rose",
             ColorTheme::Silver => "silver",
-            ColorTheme::Violet => "violet",
             ColorTheme::Fuchsia => "fuchsia",
             ColorTheme::Pink => "pink",
+            ColorTheme::Amber => "amber",
+            ColorTheme::Lime => "lime",
+            ColorTheme::Red => "red",
+            ColorTheme::Sky => "sky",
+            ColorTheme::Violet => "violet",
+            Self::Custom(_) => "custom",
         }
     }
 }
 
 pub fn prompt_color_selection() -> Option<ColorTheme> {
-    let options: Vec<ColorTheme> = ColorTheme::all();
-    let ans = inquire::Select::new("Select your primary theme color:", options)
+    let options = ColorTheme::all();
+    let ans = Select::new("Select your primary theme color:", options)
         .with_page_size(10)
         .prompt();
 
     match ans {
-        Ok(choice) => Some(choice),
+        Ok(choice) => match choice {
+            ColorTheme::Custom(_) => {
+                let hex_validator = |input: &str| {
+                    let cleaned = input.strip_prefix('#').unwrap_or(input);
+                    let is_valid_length = cleaned.len() == 3 || cleaned.len() == 6;
+                    let is_valid_chars = cleaned.chars().all(|c| c.is_ascii_hexdigit());
+
+                    if is_valid_length && is_valid_chars {
+                        Ok(Validation::Valid)
+                    } else {
+                        Ok(Validation::Invalid(
+                            "Please enter a valid 3 or 6-digit hex code (e.g., #ff5733 or ff5733)"
+                                .into(),
+                        ))
+                    }
+                };
+
+                match Text::new("Enter your custom HEX color (e.g., #ff5733 or ff5733):")
+                    .with_validator(hex_validator)
+                    .prompt()
+                {
+                    Ok(input) => {
+                        let hex = if input.starts_with('#') {
+                            input
+                        } else {
+                            format!("#{}", input)
+                        };
+                        Some(ColorTheme::Custom(hex))
+                    }
+                    Err(_) => None,
+                }
+            }
+            other => Some(other),
+        },
         Err(_) => {
             println!("No color selected.");
             None

@@ -19,7 +19,7 @@ impl Style {
     pub fn new() -> Result<Self> {
         let main_col = prompt_color_selection().ok_or(anyhow!("Couldn't find color theme"))?;
         let background_col =
-            prompt_background_selection().ok_or(anyhow!("Couldn't find background"))?;
+            prompt_background_selection(&main_col).ok_or(anyhow!("Couldn't find background"))?;
         let radius = prompt_radius_selection().ok_or(anyhow!("Couldn't find radius"))?;
 
         Ok(Self {
@@ -30,11 +30,21 @@ impl Style {
     }
 
     pub fn make_header(&self) -> String {
-        let theme = self.main_col.as_str();
         let background = self.background_col.as_str();
         let border_radius = self.radius.as_str();
-        format!(
-            r#" data-theme="{theme}" data-background-theme="{background}" data-radius-theme="{border_radius}" "#
-        )
+
+        match &self.main_col {
+            ColorTheme::Custom(hex) => {
+                format!(
+                    r#" data-theme="custom" data-background-theme="{background}" data-radius-theme="{border_radius}" style="--main: {hex}; --main-alt: {hex}; --active-bg: {hex}26;" "#
+                )
+            }
+            _ => {
+                let theme = self.main_col.as_str();
+                format!(
+                    r#" data-theme="{theme}" data-background-theme="{background}" data-radius-theme="{border_radius}" "#
+                )
+            }
+        }
     }
 }
