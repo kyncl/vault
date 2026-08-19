@@ -4,6 +4,7 @@ use anyhow::Result;
 use colored::*;
 
 use crate::{
+    features::Features,
     global_props::{css::GlobalCSS, font::GlobalFonts, js::GlobalJS},
     html::{sidebar::SidebarSection, styling::Style},
     page::Page,
@@ -72,7 +73,12 @@ impl Vault {
         self
     }
 
-    pub fn render_all<P: AsRef<Path>>(&mut self, html_root: P, style: &Style) -> Result<()> {
+    pub fn render_all<P: AsRef<Path>>(
+        &mut self,
+        html_root: P,
+        style: &Style,
+        features: &Features,
+    ) -> Result<()> {
         println!("Compiling MD files...");
         let mut rendered_htmls = Vec::with_capacity(self.pages.len());
         for page in &self.pages {
@@ -80,7 +86,7 @@ impl Vault {
                 "Rendering: {}",
                 page.metadata.md_path.display().to_string().underline()
             );
-            rendered_htmls.push(page.render(self, &html_root, style)?);
+            rendered_htmls.push(page.render(self, &html_root, style, features)?);
         }
         for (page, html) in self.pages.iter_mut().zip(rendered_htmls) {
             page.html = Some(html);

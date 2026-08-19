@@ -8,6 +8,7 @@ use std::{
 };
 use vault::{
     cli::VaultArgs,
+    features::Features,
     global_props::{GlobalProperty, css::GlobalCSS, font::GlobalFonts, js::GlobalJS},
     html::{generate_global_elem, styling},
     utils::crawler::collect_files,
@@ -18,6 +19,7 @@ fn main() -> Result<()> {
     let args = VaultArgs::parse();
     let md_root = Path::new(&args.md_path);
     let html_root = Path::new(&args.html_path);
+    let features = Features::from_cli()?;
 
     let mut css = GlobalCSS::new();
     let mut js = GlobalJS::new();
@@ -51,12 +53,12 @@ fn main() -> Result<()> {
         .global_css(css)
         .global_fonts(fonts)
         .inside_main_elem("")
-        .global_elem(generate_global_elem(&args.title))
+        .global_elem(generate_global_elem(&args.title, features.search))
         .set_pages(md_files, md_root, html_root)?
         .sort_pages()
         .set_neighbors()
         .set_sidebar_sections()
-        .render_all(html_root, &style)?;
+        .render_all(html_root, &style, &features)?;
 
     println!("Creating HTML files...");
     for data in &vault.pages {

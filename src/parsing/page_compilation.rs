@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use crate::{
+    features::Features,
     global_props::GlobalProperty,
     html::{sidebar_items::generate_sidebar_items, styling::Style, toc::generate_toc},
     page::Page,
@@ -17,6 +18,7 @@ impl Page {
         vault: &Vault,
         html_root: P,
         style: &Style,
+        features: &Features,
     ) -> Result<String> {
         let options = Options {
             parse: ParseOptions {
@@ -73,12 +75,18 @@ impl Page {
         let raw_docs = markdown::to_html_with_options(&self.text, &options)
             .map_err(|e| anyhow!("Error found during markdown parsing. Cause: {e}"))?;
         let docs = add_heading_ids(&raw_docs);
-        let toc = generate_toc(&docs);
+        let toc = if features.toc_sidebar {
+            generate_toc(&docs)
+        } else {
+            String::new()
+        };
 
         let js = format!(
-            "{}\n{}",
-            vault.global.js.compile_cached()?,
-            vault.global.js.compile_lazy(&asset_prefix)?,
+            "{}",
+            vault
+                .global
+                .js
+                .compile_with_flags(features.search, &asset_prefix)?,
         );
         let styling = format!(
             "{}\n{}",
@@ -90,6 +98,13 @@ impl Page {
             vault.global.fonts.compile_cached()?,
             vault.global.fonts.compile_lazy(&asset_prefix)?
         );
+        let visible_markdown_btn = if features.view_raw_md {
+            format!(
+                r#"<div class="raw-md"><a href="{to_md}" aria-label="to md file">Raw Markdown</a></div>"#
+            )
+        } else {
+            String::new()
+        };
 
         let html = format!(
             r#"<!DOCTYPE html>
@@ -116,9 +131,7 @@ impl Page {
                 <aside class="toc-sidebar">
                     {toc}
                 </aside>
-                <div class="raw-md">
-                    <a href="{to_md}" aria-label="to md file">Raw Markdown</a>
-                </div>
+                {visible_markdown_btn} 
             </body>
             </html>"#,
             title = if self.metadata.name.to_lowercase() == "index" {
@@ -140,7 +153,11 @@ impl Page {
         let prefix = "../".repeat(depth);
 
         let sections_html = generate_sidebar_items(&vault.sidebar_sections, &prefix);
-        let pagination_html = self.get_previous_next_btn(&prefix);
+        let pagination_html = if features.next_previous_btns {
+            self.get_previous_next_btn(&prefix)
+        } else {
+            String::new()
+        };
         let html = html
             .replace("%__HOME_HREF__%", &prefix)
             .replace("%__SIDEBAR_SECTIONS__%", &sections_html)
