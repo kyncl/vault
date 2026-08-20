@@ -52,7 +52,7 @@ fn main() -> Result<()> {
         .global_js(js)
         .global_css(css)
         .global_fonts(fonts)
-        .inside_main_elem("")
+        // .inside_main_elem("")
         .global_elem(generate_global_elem(&args.title, features.search))
         .set_pages(md_files, md_root, html_root)?
         .sort_pages()

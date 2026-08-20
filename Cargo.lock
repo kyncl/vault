@@ -2149,6 +2149,8 @@ dependencies = [
  "markdown",
  "minify-html",
  "regex",
+ "serde",
+ "serde_json",
  "syntect",
 ]
 

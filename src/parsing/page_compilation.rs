@@ -42,7 +42,7 @@ impl Page {
         let description = self
             .description
             .as_deref()
-            .unwrap_or("Part of Knot documentation");
+            .unwrap_or("Part of documentation");
         let dynamic_desc = if self.description.is_some() {
             description.to_string()
         } else {
@@ -81,13 +81,11 @@ impl Page {
             String::new()
         };
 
-        let js = format!(
-            "{}",
-            vault
-                .global
-                .js
-                .compile_with_flags(features.search, &asset_prefix)?,
-        );
+        let js = vault
+            .global
+            .js
+            .compile_with_flags(features.search, &asset_prefix)?
+            .to_string();
         let styling = format!(
             "{}\n{}",
             vault.global.css.compile_cached()?,
@@ -106,6 +104,12 @@ impl Page {
             String::new()
         };
 
+        let search_index_script = if features.search {
+            format!("<script>{}</script>", vault.generate_search_index())
+        } else {
+            String::new()
+        };
+
         let html = format!(
             r#"<!DOCTYPE html>
             <html lang="en" {headers}>
@@ -115,6 +119,7 @@ impl Page {
                 <title>{title}</title>
                 <meta name="description" content="{dynamic_desc}">
                 <link rel="icon" type="image/x-icon" href="./icon.svg">
+                {search_index_script}
                 {styling}
                 {js}
                 {fonts}

@@ -2,6 +2,7 @@ use std::path::Path;
 
 use anyhow::Result;
 use colored::*;
+use serde::Serialize;
 
 use crate::{
     features::Features,
@@ -9,6 +10,14 @@ use crate::{
     html::{sidebar::SidebarSection, styling::Style},
     page::Page,
 };
+
+#[derive(Serialize)]
+pub struct SearchEntry {
+    pub title: String,
+    pub url: String,
+    pub category: Option<String>,
+    pub headers: Vec<String>,
+}
 
 #[derive(Default)]
 pub struct Global {
@@ -126,6 +135,22 @@ impl Vault {
             }
         });
         self
+    }
+
+    pub fn generate_search_index(&self) -> String {
+        let entries: Vec<SearchEntry> = self
+            .pages
+            .iter()
+            .map(|p| SearchEntry {
+                title: p.metadata.name.clone(),
+                url: p.metadata.rel_html_path.clone(),
+                category: p.metadata.category.clone(),
+                headers: p.headers.iter().map(|(_, h)| h.clone()).collect(),
+            })
+            .collect();
+
+        let json = serde_json::to_string(&entries).unwrap_or_else(|_| "[]".into());
+        format!("window.VAULT_SEARCH_INDEX = {};", json)
     }
 }
 

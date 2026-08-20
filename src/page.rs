@@ -3,6 +3,9 @@ use std::path::PathBuf;
 
 pub struct Page {
     pub text: String,
+    /// .0 is the level of header
+    /// .1 header title
+    pub headers: Vec<(usize, String)>,
     pub description: Option<String>,
     pub html: Option<String>,
     pub previous: Option<PageNeighbor>,
@@ -20,15 +23,55 @@ pub struct PageMetadata {
 }
 impl Page {
     pub fn new(text: impl Into<String>, metadata: PageMetadata) -> Self {
+        let text_str = text.into();
+        let headers = Self::extract_headers(&text_str);
+
         Self {
-            text: text.into(),
+            text: text_str,
             description: None,
             html: None,
             next: None,
             previous: None,
+            headers,
             metadata,
         }
     }
+
+    fn extract_headers(text: &str) -> Vec<(usize, String)> {
+        let mut in_code_block = false;
+        let mut headers = Vec::new();
+
+        for line in text.lines() {
+            let trimmed = line.trim();
+
+            // Toggle state when entering or exiting code block fences
+            if trimmed.starts_with("```") || trimmed.starts_with("~~~") {
+                in_code_block = !in_code_block;
+                continue;
+            }
+
+            if in_code_block {
+                continue;
+            }
+
+            if trimmed.starts_with('#') {
+                let level = trimmed.chars().take_while(|&c| c == '#').count();
+                if (1..=6).contains(&level) {
+                    let rest = &trimmed[level..];
+                    // Valid Markdown headers require a space or tab after the hashes
+                    if rest.starts_with(' ') || rest.starts_with('\t') {
+                        let title = rest.trim().to_string();
+                        if !title.is_empty() {
+                            headers.push((level, title));
+                        }
+                    }
+                }
+            }
+        }
+
+        headers
+    }
+
     pub fn description(mut self, description: impl Into<String>) -> Self {
         self.description = Some(description.into());
         self

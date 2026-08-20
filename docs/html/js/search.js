@@ -4,7 +4,6 @@ function initSearch() {
     const searchBox = document.querySelector('.search-box');
     const searchInput = document.getElementById('search');
     const suggestionsContainer = document.querySelector('.search-suggestions');
-    const currentPath = window.location.pathname;
 
     if (!searchBtn || !searchBox || !searchInput || !suggestionsContainer) return;
 
@@ -12,104 +11,99 @@ function initSearch() {
     let selectedIndex = 0;
     const searchIndex = [];
 
-    // --- NEW: Calculate root path dynamically and add Home ---
-    // Look at any sidebar link to figure out how many "../" we need to get back to root
-    let rootPath = 'index.html';
+    const pageIcon = `<svg width="16" height="16" viewBox="0 0 20 20" style="flex-shrink: 0;">
+            <path d="M17 6v12c0 .52-.2 1-1 1H4c-.7 0-1-.33-1-1V2c0-.55.42-1 1-1h8l5 5zM14 8h-3.13c-.51 0-.87-.34-.87-.87V4" stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linejoin="round"></path>
+        </svg>`;
+    const headerIcon = `<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="16" width="16" xmlns="http://www.w3.org/2000/svg">
+            <g id="Hashtag">
+                <path d="M20.435,15.506H16.2l.61-7h3.63a.5.5,0,0,0,.5-.5.5.5,0,0,0-.5-.5H16.9l.34-3.87a.509.509,0,0,0-.46-.54.5.5,0,0,0-.54.46l-.35,3.95H8.9l.34-3.87a.509.509,0,0,0-.46-.54.491.491,0,0,0-.54.46l-.35,3.95H3.565a.5.5,0,0,0-.5.5.5.5,0,0,0,.5.5h4.24l-.62,7H3.565a.5.5,0,0,0-.5.5.5.5,0,0,0,.5.5h3.54l-.34,3.86a.508.508,0,0,0,.45.54h.05a.516.516,0,0,0,.5-.46l.34-3.94h7l-.34,3.86a.508.508,0,0,0,.45.54h.05a.516.516,0,0,0,.5-.46l.34-3.94h4.33a.5.5,0,0,0,.5-.5A.5.5,0,0,0,20.435,15.506Zm-5.25,0H8.2l.61-7h7Z"></path>
+            </g>
+        </svg>`;
+
+    // Normalize pathnames to reliably detect the active page
+    const normalizePath = (path) => path.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+    const currentPath = normalizePath(window.location.pathname);
+
+    const isCurrentPage = (href) => {
+        try {
+            const targetPath = normalizePath(new URL(href, window.location.href).pathname);
+            return targetPath === currentPath;
+        } catch (e) {
+            return false;
+        }
+    };
+
+    // Calculate relative depth prefix (e.g., "../../") to navigate from current subfolder to root
     const sampleLink = document.querySelector('.sidebar-link, .sidebar-title-link');
-    if (sampleLink) {
-        const href = sampleLink.getAttribute('href') || '';
-        // Extract the leading "../" sequences if they exist
-        const match = href.match(/^(?:\.\.\/)+/);
-        rootPath = match ? `${match[0]}index.html` : 'index.html';
-    }
+    const sampleHref = sampleLink ? sampleLink.getAttribute('href') : '';
+    const prefixMatch = sampleHref ? sampleHref.match(/^(?:\.\.\/)+/) : null;
+    const prefix = prefixMatch ? prefixMatch[0] : '';
 
-    // Inject Home page into search index
-    const rootResolver = document.createElement('a');
-    rootResolver.href = rootPath;
+    // Ingest global Vault search index injected via Rust script
+    if (Array.isArray(window.VAULT_SEARCH_INDEX)) {
+        window.VAULT_SEARCH_INDEX.forEach(item => {
+            const fullUrl = `${prefix}${item.url}`;
+            const category = item.category || 'Page';
 
-    if (rootResolver.pathname !== currentPath) {
-        searchIndex.push({
-            title: 'Home',
-            searchableText: 'home homepage root main',
-            href: rootPath,
-            type: 'Page'
-        });
-    }
-    // ---------------------------------------------------------
+            // Resolve page title: root index -> "Homepage", nested index -> parent folder name
+            let title = item.title;
+            const isIndexPage = item.title.toLowerCase() === 'index' ||
+                item.url === 'index.html' ||
+                item.url.endsWith('/index.html');
 
-    // Parse structured sidebar sections
-    document.querySelectorAll('.sidebar-section').forEach(section => {
-        const titleLinkEl = section.querySelector('.sidebar-title-link');
-        const titleEl = section.querySelector('.sidebar-title');
+            if (isIndexPage) {
+                title = item.category ? item.category : 'Homepage';
+            }
 
-        let categoryName = 'Documentation';
-        if (titleLinkEl) {
-            categoryName = titleLinkEl.textContent.trim();
-            // NEW: Check if the category index is the current page
-            if (titleLinkEl.pathname !== currentPath) {
+            // Add Page Entry (only if it is not the current page)
+            if (!isCurrentPage(fullUrl)) {
                 searchIndex.push({
-                    title: `${categoryName} (Index)`,
-                    searchableText: `${categoryName.toLowerCase()} index directory`,
-                    href: titleLinkEl.getAttribute('href'),
-                    type: 'Category Index'
+                    title,
+                    searchableText: `${title} ${category}`.toLowerCase(),
+                    href: fullUrl,
+                    type: category,
+                    isHeader: false
                 });
             }
-        } else if (titleEl) {
-            categoryName = titleEl.textContent.trim();
-        }
 
-        section.querySelectorAll('.sidebar-link').forEach(link => {
-            // NEW: Check if the link is the current page
-            if (link.pathname !== currentPath) {
+            // Add Section/Heading Entries
+            if (Array.isArray(item.headers)) {
+                item.headers.forEach(header => {
+                    // Lowercase, replace non-word chars with hyphens, and trim leading/trailing hyphens
+                    const id = header
+                        .toLowerCase()
+                        .replace(/&amp;/g, 'amp')
+                        .replace(/&/g, 'amp')
+                        .replace(/[^\w]+/g, '-')
+                        .replace(/^-+|-+$/g, '');
+                    if (!id) return; // Skip if header consisted purely of special characters
+
+                    searchIndex.push({
+                        title: header,
+                        searchableText: `${header} ${title} ${category}`.toLowerCase(),
+                        href: `${fullUrl}#${id}`,
+                        type: `${title} > Section`,
+                        isHeader: true
+                    });
+                });
+            }
+        });
+    } else {
+        // Fallback DOM Indexing if VAULT_SEARCH_INDEX is unavailable
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && !isCurrentPage(href)) {
                 const title = link.textContent.trim();
                 searchIndex.push({
                     title,
-                    searchableText: `${title} ${categoryName}`.toLowerCase(),
-                    href: link.getAttribute('href'),
-                    type: categoryName
+                    searchableText: title.toLowerCase(),
+                    href,
+                    type: 'Page',
+                    isHeader: false
                 });
             }
         });
-    });
-
-    // Parse root-level sidebar lists
-    document.querySelectorAll('.sidebar > .sidebar-list .sidebar-link').forEach(link => {
-        if (link.pathname !== currentPath) {
-            const title = link.textContent.trim();
-            searchIndex.push({
-                title,
-                searchableText: title.toLowerCase(),
-                href: link.getAttribute('href'),
-                type: 'Page'
-            });
-        }
-    });
-
-    // Parse content headers
-    document.querySelectorAll('.doc-content h1, .doc-content h2, .doc-content h3').forEach(header => {
-        let id = header.id;
-        if (!id) {
-            id = header.textContent.toLowerCase().replace(/[^\w]+/g, '-');
-            header.id = id;
-        }
-
-        let sectionText = header.textContent;
-        let nextElement = header.nextElementSibling;
-        while (nextElement && !['H1', 'H2', 'H3'].includes(nextElement.tagName)) {
-            sectionText += ` ${nextElement.textContent}`;
-            nextElement = nextElement.nextElementSibling;
-        }
-
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-        const title = header.textContent.trim();
-
-        searchIndex.push({
-            title,
-            searchableText: sectionText.toLowerCase(),
-            href: `${currentPage}#${id}`,
-            type: 'Section'
-        });
-    });
+    }
 
     const closeSearch = () => {
         searchBox.classList.remove('active');
@@ -145,7 +139,7 @@ function initSearch() {
             })
                 .filter(item => item.score > 0)
                 .sort((a, b) => b.score - a.score)
-                .slice(0, 5);
+                .slice(0, 6);
         }
 
         if (currentMatches.length === 0) {
@@ -160,7 +154,15 @@ function initSearch() {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = `suggestion-item ${index === 0 ? 'selected' : ''}`;
-            btn.innerHTML = `<span>${match.title}</span> <small style="opacity: 0.4; font-size: 0.75rem; font-family: var(--font-code);">${match.type}</small>`;
+            const icon = match.isHeader ? headerIcon : pageIcon;
+
+            btn.innerHTML = `
+                <span style="display: inline-flex; align-items: center; gap: 0.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    ${icon}
+                    <span>${match.title}</span>
+                </span>
+                <small style="opacity: 0.4; font-size: 0.75rem; font-family: var(--font-code); margin-left: 0.5rem; flex-shrink: 0;">${match.type}</small>
+            `;
 
             btn.addEventListener('click', () => {
                 window.location.href = match.href;

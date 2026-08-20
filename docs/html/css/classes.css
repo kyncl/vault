@@ -190,6 +190,7 @@ body.sidebar-locked .search-box {
 }
 
 .sidebar-title {
+    display: flex;
     font-family: var(--font-code);
     padding: 0.25rem 0.75rem;
     font-weight: 700;
@@ -198,19 +199,40 @@ body.sidebar-locked .search-box {
     letter-spacing: 0.05em;
     color: var(--foreground);
     margin-bottom: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+
+    button {
+        background-color: transparent;
+        border: none;
+        color: var(--foreground);
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: var(--radius-sm, 4px);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: color 0.2s ease, background-color 0.2s ease;
+
+        &:hover {
+            color: var(--main);
+            background-color: var(--hover-bg);
+        }
+    }
 }
 
-a.sidebar-title-link {
+a.sidebar-title-link,
+.sidebar-title-text {
+    flex-grow: 1;
     color: var(--foreground);
     text-decoration: none;
     transition: color 0.2s ease;
     display: flex;
     align-items: center;
     gap: 0.4rem;
-}
-
-a.sidebar-title-link::before {
-    content: ">";
+    padding: 0.25rem 0;
 }
 
 a.sidebar-title-link::after {
@@ -219,11 +241,13 @@ a.sidebar-title-link::after {
     transition: transform 0.2s ease, opacity 0.2s ease, color 0.2s ease;
 }
 
-a.sidebar-title-link:hover {
+a.sidebar-title-link:hover,
+a.sidebar-title-link:hover~button {
     color: var(--main);
 }
 
-a.sidebar-title-link.active {
+a.sidebar-title-link.active,
+a.sidebar-title-link.active~button {
     color: var(--main-alt);
     cursor: default;
 }
@@ -239,6 +263,15 @@ a.sidebar-title-link:not(.active):hover::before {
     padding: 0;
     margin: 0;
     text-transform: capitalize;
+}
+
+.sidebar-section .sidebar-list {
+    margin-left: 1.5rem;
+
+    a:not(.active) {
+        border-radius: 0;
+        border-left: 1px solid var(--border);
+    }
 }
 
 .sidebar-item {
@@ -486,4 +519,16 @@ a.sidebar-title-link:not(.active):hover::before {
     .doc-content {
         padding: 1.5rem;
     }
+}
+
+.sidebar-section.collapsed .sidebar-list {
+    display: none;
+}
+
+.sidebar-section.collapsed .sidebar-toggle svg {
+    transform: rotate(-90deg);
+}
+
+.sidebar-toggle svg {
+    transition: transform 0.2s ease;
 }
