@@ -67,11 +67,13 @@ a {
 }
 
 main a {
+    transition: 400ms;
     color: var(--main);
     text-decoration: underline;
 }
 
 a:hover {
+    transition: 250ms;
     color: var(--main-alt);
     text-decoration-color: var(--main-alt);
 }
@@ -89,6 +91,8 @@ p code,
 li code,
 td code,
 blockquote code {
+    transition: 400ms;
+    white-space: nowrap;
     font-size: 0.85em;
     background-color: var(--card-bg);
     border: 1px solid var(--border);

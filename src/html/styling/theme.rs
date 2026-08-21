@@ -24,6 +24,7 @@ pub enum ColorTheme {
     Red,
     Sky,
     Violet,
+    Rainbow,
     Custom(String),
 }
 
@@ -31,31 +32,49 @@ impl Display for ColorTheme {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = format!("{:?}", self);
         let colored_name = match self {
-            ColorTheme::Crimson => name.truecolor(251, 44, 54),
-            ColorTheme::OrangeRed => name.truecolor(245, 73, 0),
-            ColorTheme::Orange => name.truecolor(225, 113, 0),
-            ColorTheme::Yellow => name.truecolor(208, 135, 0),
-            ColorTheme::Green => name.truecolor(94, 165, 0),
-            ColorTheme::Emerald => name.truecolor(0, 166, 62),
-            ColorTheme::Teal => name.truecolor(0, 153, 102),
-            ColorTheme::Cyan => name.truecolor(0, 150, 137),
-            ColorTheme::Blue => name.truecolor(0, 146, 184),
-            ColorTheme::Indigo => name.truecolor(113, 91, 255),
-            ColorTheme::Purple => name.truecolor(110, 17, 176),
-            ColorTheme::Rose => name.truecolor(236, 0, 63),
-            ColorTheme::Silver => name.truecolor(249, 250, 251),
-            ColorTheme::Fuchsia => name.truecolor(200, 0, 222),
-            ColorTheme::Pink => name.truecolor(230, 0, 118),
-            ColorTheme::Amber => name.truecolor(151, 60, 0),
-            ColorTheme::Lime => name.truecolor(124, 207, 0),
-            ColorTheme::Red => name.truecolor(159, 7, 18),
-            ColorTheme::Sky => name.truecolor(0, 89, 138),
-            ColorTheme::Violet => name.truecolor(93, 14, 192),
+            ColorTheme::Crimson => name.truecolor(251, 44, 54).to_string(),
+            ColorTheme::OrangeRed => name.truecolor(245, 73, 0).to_string(),
+            ColorTheme::Orange => name.truecolor(225, 113, 0).to_string(),
+            ColorTheme::Yellow => name.truecolor(208, 135, 0).to_string(),
+            ColorTheme::Green => name.truecolor(94, 165, 0).to_string(),
+            ColorTheme::Emerald => name.truecolor(0, 166, 62).to_string(),
+            ColorTheme::Teal => name.truecolor(0, 153, 102).to_string(),
+            ColorTheme::Cyan => name.truecolor(0, 150, 137).to_string(),
+            ColorTheme::Blue => name.truecolor(0, 146, 184).to_string(),
+            ColorTheme::Indigo => name.truecolor(113, 91, 255).to_string(),
+            ColorTheme::Purple => name.truecolor(110, 17, 176).to_string(),
+            ColorTheme::Rose => name.truecolor(236, 0, 63).to_string(),
+            ColorTheme::Silver => name.truecolor(249, 250, 251).to_string(),
+            ColorTheme::Fuchsia => name.truecolor(200, 0, 222).to_string(),
+            ColorTheme::Pink => name.truecolor(230, 0, 118).to_string(),
+            ColorTheme::Amber => name.truecolor(151, 60, 0).to_string(),
+            ColorTheme::Lime => name.truecolor(124, 207, 0).to_string(),
+            ColorTheme::Red => name.truecolor(159, 7, 18).to_string(),
+            ColorTheme::Sky => name.truecolor(0, 89, 138).to_string(),
+            ColorTheme::Violet => name.truecolor(93, 14, 192).to_string(),
+            ColorTheme::Rainbow => {
+                let rainbow_text: String = name
+                    .chars()
+                    .enumerate()
+                    .map(|(i, c)| {
+                        let s = c.to_string();
+                        match i % 6 {
+                            0 => s.red().to_string(),
+                            1 => s.yellow().to_string(),
+                            2 => s.green().to_string(),
+                            3 => s.cyan().to_string(),
+                            4 => s.blue().to_string(),
+                            _ => s.purple().to_string(),
+                        }
+                    })
+                    .collect();
+                rainbow_text
+            }
             ColorTheme::Custom(hex) => {
                 if hex.is_empty() {
-                    "Custom HEX".underline()
+                    "Custom HEX".underline().to_string()
                 } else {
-                    format!("Custom ({hex})").underline()
+                    format!("Custom ({hex})").underline().to_string()
                 }
             }
         };
@@ -87,6 +106,7 @@ impl ColorTheme {
             ColorTheme::Red,
             ColorTheme::Sky,
             ColorTheme::Violet,
+            ColorTheme::Rainbow,
             ColorTheme::Custom(String::new()),
         ]
     }
@@ -113,6 +133,7 @@ impl ColorTheme {
             ColorTheme::Red => "red",
             ColorTheme::Sky => "sky",
             ColorTheme::Violet => "violet",
+            ColorTheme::Rainbow => "rainbow",
             Self::Custom(_) => "custom",
         }
     }
