@@ -1,6 +1,8 @@
 use anyhow::Result;
 use inquire::MultiSelect;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct Features {
     pub search: bool,
     pub next_previous_btns: bool,

@@ -1,9 +1,11 @@
 use crate::html::styling::theme::ColorTheme;
+use clap::ValueEnum;
 use colored::Colorize;
 use inquire::Select;
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ValueEnum)]
 pub enum BackgroundTheme {
     Standard,
     Comfy,

@@ -40,6 +40,12 @@ function changeColor() {
         "sky",
         "violet"
     ];
+    const current = document.documentElement.getAttribute('data-theme');
     const index = Math.floor(Math.random() * themes.length);
-    document.documentElement.setAttribute('data-theme', themes[index]);
+    if (current !== themes[index]) {
+        document.documentElement.setAttribute('data-theme', themes[index]);
+    }
+    else {
+        changeColor();
+    }
 }

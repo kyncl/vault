@@ -1,93 +1,71 @@
 use anyhow::Result;
 use clap::Parser;
-use colored::*;
-use std::{
-    fs::{self, create_dir_all},
-    io::Write,
-    path::Path,
-};
+use inquire::Confirm;
+use std::fs::{self};
 use vault::{
     cli::VaultArgs,
-    features::Features,
-    global_props::{GlobalProperty, css::GlobalCSS, font::GlobalFonts, js::GlobalJS},
-    html::{generate_global_elem, styling},
-    utils::crawler::collect_files,
-    vault::Vault,
+    config::Configuration,
+    modes::{init::init_config, parse::parse_docs},
+    utils::config_path::resolve_config_paths,
 };
 
 fn main() -> Result<()> {
     let args = VaultArgs::parse();
-    let md_root = Path::new(&args.md_path);
-    let html_root = Path::new(&args.html_path);
-    let features = Features::from_cli()?;
 
-    let mut css = GlobalCSS::new();
-    let mut js = GlobalJS::new();
-    let mut fonts = GlobalFonts::new();
-    css.set_global_property(html_root.join("css"), "css")?;
-    js.set_global_property(html_root.join("js"), "js")?;
-    let style = styling::Style::new()?;
-
-    let fonts_dir = html_root.join("fonts");
-    if fonts_dir.exists() {
-        for entry in std::fs::read_dir(fonts_dir)? {
-            let entry = entry?;
-            let path = entry.path();
-            if path.is_file()
-                && let Some(ext) = path.extension().and_then(|e| e.to_str())
+    match args.modes {
+        vault::cli::Modes::Init { flags } => {
+            let (config, config_dir) = init_config(flags)?;
+            if Confirm::new("Do you want to parse the docs?")
+                .with_default(true)
+                .prompt()?
             {
-                let ext_lower = ext.to_lowercase();
-                if matches!(ext_lower.as_str(), "ttf" | "woff" | "woff2" | "otf") {
-                    fonts.add_lazy(&path);
+                parse_docs(config, config_dir)?;
+            }
+        }
+        vault::cli::Modes::Parse { flags } => {
+            let (config, config_dir) = if let Ok((config_file, config_dir)) =
+                resolve_config_paths(Some(&flags.config_path))
+            {
+                let mut config = Configuration::from_string(fs::read_to_string(config_file)?)?;
+                if let Some(title) = flags.title {
+                    config.title = title;
                 }
-            }
+                // This is pretty much only useful, when user has in config false values in
+                // features. Because not passing the flag is taken as false. This can mean user doesn't
+                // want the property or they're just lazy to pass the flag. Clap doesn't support
+                // something, like `--search=false`.
+                if let Some(features) = flags.features {
+                    if features.search {
+                        config.features.search = features.search;
+                    }
+                    if features.view_raw_md {
+                        config.features.view_raw_md = features.view_raw_md;
+                    }
+                    if features.toc_sidebar {
+                        config.features.toc_sidebar = features.toc_sidebar;
+                    }
+                    if features.next_previous_btns {
+                        config.features.next_previous_btns = features.next_previous_btns;
+                    }
+                }
+                if let Some(style) = &flags.style {
+                    if let Some(ref radius) = style.radius {
+                        config.styling.radius = *radius;
+                    }
+                    if let Some(ref theme_col) = style.main_col {
+                        config.styling.main_col = theme_col.clone();
+                    }
+                    if let Some(ref bg_col) = style.bg_col {
+                        config.styling.background_col = *bg_col;
+                    }
+                }
+                (config, config_dir)
+            } else {
+                init_config(flags)?
+            };
+            parse_docs(config, config_dir)?;
         }
     }
 
-    let mut md_files = Vec::new();
-    collect_files(md_root, &mut md_files, "md")?;
-
-    let mut vault = Vault::new();
-    vault
-        .global_js(js)
-        .global_css(css)
-        .global_fonts(fonts)
-        // .inside_main_elem("")
-        .global_elem(generate_global_elem(&args.title, features.search))
-        .set_pages(md_files, md_root, html_root)?
-        .sort_pages()
-        .set_neighbors()
-        .set_sidebar_sections()
-        .render_all(html_root, &style, &features)?;
-
-    println!("Creating HTML files...");
-    for data in &vault.pages {
-        if let Some(html) = &data.html {
-            if let Some(parent) = data.metadata.html_path.parent() {
-                create_dir_all(parent)?;
-            }
-            let mut file = fs::File::create(&data.metadata.html_path)?;
-            file.write_all(html.as_bytes())?;
-            file.flush()?;
-        } else {
-            eprintln!(
-                "Couldn't create {} because the content is empty",
-                data.metadata.html_path.display()
-            );
-        }
-    }
-
-    if html_root.join("index.html").exists() {
-        println!(
-            "Compilation complete.\nYou can check the homepage on: {}",
-            html_root
-                .join("index.html")
-                .display()
-                .to_string()
-                .underline()
-        );
-    } else {
-        println!("Compilation complete.");
-    }
     Ok(())
 }

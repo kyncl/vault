@@ -1,8 +1,9 @@
 use colored::*;
 use inquire::{Select, Text, validator::Validation};
+use serde::{Deserialize, Serialize};
 use std::fmt::{self, Display};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ColorTheme {
     Crimson,
     OrangeRed,
@@ -26,6 +27,47 @@ pub enum ColorTheme {
     Violet,
     Rainbow,
     Custom(String),
+}
+
+pub fn parse_color_theme(s: &str) -> Result<ColorTheme, String> {
+    match s.to_lowercase().as_str() {
+        "crimson" => Ok(ColorTheme::Crimson),
+        "orangered" => Ok(ColorTheme::OrangeRed),
+        "orange" => Ok(ColorTheme::Orange),
+        "yellow" => Ok(ColorTheme::Yellow),
+        "green" => Ok(ColorTheme::Green),
+        "emerald" => Ok(ColorTheme::Emerald),
+        "teal" => Ok(ColorTheme::Teal),
+        "cyan" => Ok(ColorTheme::Cyan),
+        "blue" => Ok(ColorTheme::Blue),
+        "indigo" => Ok(ColorTheme::Indigo),
+        "purple" => Ok(ColorTheme::Purple),
+        "rose" => Ok(ColorTheme::Rose),
+        "silver" => Ok(ColorTheme::Silver),
+        "fuchsia" => Ok(ColorTheme::Fuchsia),
+        "pink" => Ok(ColorTheme::Pink),
+        "amber" => Ok(ColorTheme::Amber),
+        "lime" => Ok(ColorTheme::Lime),
+        "red" => Ok(ColorTheme::Red),
+        "sky" => Ok(ColorTheme::Sky),
+        "violet" => Ok(ColorTheme::Violet),
+        "rainbow" => Ok(ColorTheme::Rainbow),
+        custom => {
+            let cleaned = custom.strip_prefix('#').unwrap_or(custom);
+            let is_valid_length = cleaned.len() == 3 || cleaned.len() == 6;
+            let is_valid_chars = cleaned.chars().all(|c| c.is_ascii_hexdigit());
+
+            if is_valid_length && is_valid_chars {
+                if custom.starts_with('#') {
+                    Ok(ColorTheme::Custom(custom.to_string()))
+                } else {
+                    Ok(ColorTheme::Custom(format!("#{custom}")))
+                }
+            } else {
+                Err("Invalid HEX code".to_string())
+            }
+        }
+    }
 }
 
 impl Display for ColorTheme {

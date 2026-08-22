@@ -45,6 +45,9 @@ source Markdown files from the generated HTML output:
 ```text
 your-project/
 ├── docs/
+│   ├── .vault/             # Default folder for configuration files
+│   │   ├── config.toml     # Configuration of your parsing settings
+│   │   └── vault-ignore    # Patterns, which should be ignored (same syntax as gitignore)
 │   ├── md/                 # Your source Markdown files
 │   │   └── index.md
 │   └── html/               # Generated output site
@@ -66,9 +69,9 @@ git clone https://github.com/kyncl/vault.git
 cd vault
 
 # For development (fast compilation)
-cargo run -- --title "Your Custom Title"
+cargo run -- parse
 # For production builds (optimized performance)
-cargo run --release -- --title "Your Custom Title"
+cargo run --release -- parse
 ```
 Vault will read all Markdown files, parse metadata, map sequential links, generate structured sidebars, 
 inject custom CSS/JS assets, and output minified HTML files 
@@ -81,23 +84,23 @@ make install
 ```
 Once installed, you can run Vault from anywhere:
 ```bash
-vault --title <YOUR-CUSTOM-TITLE>
+vault parse
 ```
 
 ## Configuration & CLI Flags
-You can customize input and output directories by passing command-line flags:
-```text
-Path Options:
-  -m, --md-path <MD_PATH>
-         Folder, where your markdowns live
+If you don't want to read through the whole thing, you can just do:
+```bash
+vault init
+```
+This will pull up CLI form, which will do the heavy lifting.
 
-         [default: ./docs/md]
-
-  -p, --html-path <HTML_PATH>
-         Folder, where will your HTML files live
-         and its resources
-
-         [default: ./docs/html]
+If you want to see all options, which can be set. Checkout:
+```bash
+vault --help
+# For parsing
+vault parse --help
+# For the init (tbh they are kind of useless)
+vault init --help
 ```
 
 ## License & Commercial Use

@@ -1,0 +1,14 @@
+title = "Title"
+md_path = "./docs/md"
+html_path = "./docs/html"
+
+[features]
+search = true
+next_previous_btns = true
+view_raw_md = true
+toc_sidebar = true
+
+[styling]
+main_col = "Crimson"
+background_col = "Standard"
+radius = "Standard"

@@ -1,4 +1,5 @@
 use anyhow::Result;
+use ignore::gitignore::Gitignore;
 use std::path::Path;
 
 use crate::utils::crawler::collect_files;
@@ -27,9 +28,21 @@ pub trait GlobalProperty {
         }
     }
 
-    fn set_global_property<P: AsRef<Path>>(&mut self, folder: P, extension: &str) -> Result<()> {
+    fn set_global_property<P: AsRef<Path>>(
+        &mut self,
+        folder: P,
+        project_root: &Path,
+        extension: &str,
+        ignorer: &Gitignore,
+    ) -> Result<()> {
         let mut files = vec![];
-        collect_files(folder.as_ref(), &mut files, extension)?;
+        collect_files(
+            folder.as_ref(),
+            project_root,
+            &mut files,
+            extension,
+            ignorer,
+        )?;
         files.sort_by(|a, b| {
             let a_name = a.file_name().unwrap_or(a.as_os_str()).to_string_lossy();
             let b_name = b.file_name().unwrap_or(b.as_os_str()).to_string_lossy();

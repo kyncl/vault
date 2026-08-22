@@ -416,7 +416,7 @@ li.active::before {
     top: 0;
     bottom: 0;
     width: 2px;
-    background-color: var(--foreground);
+    background-color: var(--main);
     border-radius: var(--radius-xs);
 }
 

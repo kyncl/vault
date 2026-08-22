@@ -88,11 +88,11 @@ impl Vault {
         style: &Style,
         features: &Features,
     ) -> Result<()> {
-        println!("Compiling MD files...");
+        println!("Parsing MD files...");
         let mut rendered_htmls = Vec::with_capacity(self.pages.len());
         for page in &self.pages {
             println!(
-                "Rendering: {}",
+                "Parsing: {}",
                 page.metadata.md_path.display().to_string().underline()
             );
             rendered_htmls.push(page.render(self, &html_root, style, features)?);
