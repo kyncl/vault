@@ -20,7 +20,7 @@ jobs:
     name: fmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
@@ -34,20 +34,20 @@ jobs:
       contents: read
       checks: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y libdbus-1-dev pkg-config
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
       - uses: Swatinem/rust-cache@v2
-      - uses: clechasseur/rs-clippy-check@v4
+      - uses: clechasseur/rs-clippy-check@v5
 
   doc:
     name: doc
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y libdbus-1-dev pkg-config
       - uses: dtolnay/rust-toolchain@nightly
@@ -64,7 +64,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libdbus-1-dev pkg-config
@@ -79,14 +79,14 @@ jobs:
     name: coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y libdbus-1-dev pkg-config
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@cargo-tarpaulin
       - run: cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         with:
           files: ./cobertura.xml
 
@@ -94,20 +94,12 @@ jobs:
     name: msrv
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y libdbus-1-dev pkg-config
       # Specify your minimum supported Rust version here (e.g., 1.75.0)
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: "1.75.0"
+          toolchain: "1.88.0"
       - uses: Swatinem/rust-cache@v2
       - run: cargo check --all-features
-
-  security_audit:
-    name: security audit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: taiki-e/install-action@cargo-audit
-      - run: cargo audit

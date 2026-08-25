@@ -4,7 +4,16 @@ It automatically transforms a directory of Markdown files into a fully responsiv
 styled documentation site complete with automatic sidebar navigation, category grouping, 
 syntax highlighting, and dynamic previous/next page buttons.
 
----
+[![Build Status](https://github.com/kyncl/vault/workflows/CI/badge.svg?style=for-the-badge)](https://github.com/kyncl/vault/actions)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
+[![Rust](https://img.shields.io/badge/Made%20with-Rust-orange.svg?style=for-the-badge)](https://www.rust-lang.org/)
+![supported platforms](https://img.shields.io/badge/platform-linux%20|%20windows%20|%20macos-success?style=for-the-badge)
+![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg?style=for-the-badge)
+
+[![Open Issues](https://img.shields.io/github/issues/kyncl/vault?style=for-the-badge)](https://github.com/kyncl/vault/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/kyncl/vault?style=for-the-badge)](https://github.com/kyncl/vault)
 
 ## Features
 
@@ -109,6 +118,31 @@ vault parse --help
 # For the init (tbh they are kind of useless)
 vault init --help
 ```
+
+## Gallery
+
+<table>
+  <tr>
+    <td align="center"><img src="imgs/image_0.png" alt="Screenshot 1"></td>
+    <td align="center"><img src="imgs/image_1.png" alt="Screenshot 2"></td>
+    <td align="center"><img src="imgs/image_2.png" alt="Screenshot 3"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="imgs/image_3.png" alt="Screenshot 4"></td>
+    <td align="center"><img src="imgs/image_4.png" alt="Screenshot 5"></td>
+    <td align="center"><img src="imgs/image_5.png" alt="Screenshot 6"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="imgs/image_9.png" alt="Screenshot 10"></td>
+    <td align="center"><img src="imgs/image_10.png" alt="Screenshot 11"></td>
+    <td align="center"><img src="imgs/image_8.png" alt="Screenshot 9"></td>
+  </tr>
+  <tr>
+    <td align="center"></td>
+    <td align="center"><img src="imgs/image_11.png" alt="Screenshot 12"></td>
+    <td align="center"></td>
+  </tr>
+</table>
 
 ## License & Commercial Use
 Distributed under the MIT License. See LICENSE for more information.
