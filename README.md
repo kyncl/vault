@@ -15,7 +15,13 @@ the bottom of every page with full title mapping.
 - **Auto-Generated Sidebar:** Intelligently organizes files into sidebar sections 
 based on your folder structure, prioritizing key files like `index` or `overview` 
 (index files are turned into clickable category header).
-- **Syntax Highlighting:** Built-in code block styling and syntax 
+- **File Exclusion (`vault-ignore`):** Define exactly what gets processed and what doesn't.
+Using a `.vault/vault-ignore` file, which shares the exact same syntax as a standard `.gitignore`, you can easily prevent
+specific drafts, private notes, templates, or entire directories from being parsed into your public HTML documentation.
+- **Custom Sidebar Ordering:** Override default alphabetical sorting with `.vault/order`.
+Simply list your files and folders in the order you want them displayed, top to bottom, using simple indentation
+for nested category items. If you want to reset it back to original, use `vault default-order`.
+- **Syntax Highlighting:** Built-in code block styling and syntax
 highlighting for technical documentation.
 - **Fully Customizable Styling Engine:** Change the look and feel of your docs using custom CLI:
   - **20 Color Themes:** Choose from Crimson, Orange, Emerald, Teal, Cyan, Blue, Violet, Fuchsia, Pink, and more.
@@ -47,7 +53,8 @@ your-project/
 ├── docs/
 │   ├── .vault/             # Default folder for configuration files
 │   │   ├── config.toml     # Configuration of your parsing settings
-│   │   └── vault-ignore    # Patterns, which should be ignored (same syntax as gitignore)
+│   │   ├── vault-ignore    # Patterns, which should be ignored (same syntax as gitignore)
+│   │   └── order           # Here lives your ordering of your sidebar
 │   ├── md/                 # Your source Markdown files
 │   │   └── index.md
 │   └── html/               # Generated output site

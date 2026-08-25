@@ -152,3 +152,82 @@ td {
 tr:last-child td {
     border-bottom: none;
 }
+
+/* =================================================================
+   6. Task Lists & Checkboxes
+   ================================================================ */
+
+ul:has(> li input[type="checkbox"]),
+.contains-task-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+li:has(> input[type="checkbox"]),
+.task-list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    margin-top: 0.2rem;
+
+    background-color: transparent;
+    border: 2px solid var(--muted);
+    border-radius: var(--radius-sm, 4px);
+
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    transition: background-color 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
+}
+
+input[type="checkbox"]:hover:not(:disabled) {
+    border-color: var(--main);
+}
+
+input[type="checkbox"]:focus-visible {
+    outline: none;
+    border-color: var(--main);
+    box-shadow: 0 0 0 2px rgba(var(--main), 0.15);
+}
+
+input[type="checkbox"]::before {
+    content: "";
+    width: 0.75rem;
+    height: 0.75rem;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    background-color: var(--foreground);
+    transform: scale(0);
+    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--main-alt);
+    border-color: var(--main-alt);
+}
+
+input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+li:has(> input[type="checkbox"]:checked) {
+    color: var(--muted);
+    text-decoration: line-through;
+    transition: color 250ms ease;
+}

@@ -7,7 +7,7 @@ use anyhow::{Result, anyhow};
 use inquire::{Confirm, Text};
 
 use crate::{
-    CONFIG_FILE, CONFIGURATION_FOLDER, IGNORE_FILE,
+    CONFIG_FILE, CONFIGURATION_FOLDER, IGNORE_FILE, ORDERING_FILE,
     cli::Flags,
     config::Configuration,
     features::Features,
@@ -15,7 +15,9 @@ use crate::{
         Style, background::prompt_background_selection, border_radius::prompt_radius_selection,
         theme::prompt_color_selection,
     },
-    utils::autocomplete::path::FilePathCompleter,
+    ignore::make_git_ignore,
+    utils::{autocomplete::path::FilePathCompleter, crawler::collect_files},
+    vault::Vault,
 };
 
 pub fn init_config(flags: Flags) -> Result<(Configuration, PathBuf)> {
@@ -130,14 +132,67 @@ pub fn init_config(flags: Flags) -> Result<(Configuration, PathBuf)> {
         .join(CONFIGURATION_FOLDER);
     let config_path = config_folder.join(CONFIG_FILE);
 
-    let msg = format!("Do you want to save into {}", config_path.display());
+    let msg = format!(
+        "Do you want to save configuration into {}",
+        config_folder.display()
+    );
     if Confirm::new(&msg).with_default(true).prompt()? {
         fs::create_dir_all(&config_folder)?;
         fs::write(&config_path, config.to_toml()?)?;
         if !fs::exists(config_folder.join(IGNORE_FILE))? {
             fs::File::create(config_folder.join(IGNORE_FILE))?;
         }
+        make_order_conf(&config, &config_folder)?;
     }
 
     Ok((config, config_dir))
+}
+
+pub fn make_order_conf(config: &Configuration, config_dir: &Path) -> Result<()> {
+    if fs::exists(config_dir.join(ORDERING_FILE))?
+        && !fs::read_to_string(config_dir.join(ORDERING_FILE))?.is_empty()
+        && !Confirm::new("Do you want to update your order file?")
+            .with_default(true)
+            .prompt()?
+    {
+        return Ok(());
+    }
+
+    let mut patterns = if let Ok(data) = fs::read_to_string(config_dir.join(IGNORE_FILE)) {
+        data.lines()
+            .filter_map(|l| {
+                if !l.starts_with("#") && !l.is_empty() {
+                    Some(l.to_string())
+                } else {
+                    None
+                }
+            })
+            .collect()
+    } else {
+        vec![]
+    };
+    patterns.push(CONFIGURATION_FOLDER.to_string());
+    let ignorer = make_git_ignore(
+        config_dir.parent().unwrap_or(&PathBuf::from(".")),
+        &patterns,
+    )?;
+    let mut md_files = Vec::new();
+    collect_files(
+        &config.md_path,
+        &config.md_path,
+        &mut md_files,
+        "md",
+        &ignorer,
+    )?;
+    let mut vault = Vault::new();
+    vault
+        .set_pages(md_files, &config.md_path, &config.html_path)?
+        .sort_pages(None)
+        .set_neighbors()
+        .set_sidebar_sections();
+    fs::write(
+        config_dir.join(ORDERING_FILE),
+        vault.generate_static_manifest(),
+    )?;
+    Ok(())
 }

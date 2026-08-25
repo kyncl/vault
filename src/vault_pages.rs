@@ -53,6 +53,7 @@ impl Vault {
                     name,
                     rel_html_path,
                     category,
+                    file_name,
                 };
                 let data = Page::new(&data_str, metadata);
                 self.add_file(data);

@@ -17,6 +17,12 @@ Setext Heading 2
 
 This paragraph demonstrates standard text formatting: **bold text**, *italicized text*, ***bold and italicized***, ~~strikethrough~~, and ==highlighted text==. You can also represent inline code like `const x = 42;` or keystrokes using <kbd>Ctrl</kbd> + <kbd>C</kbd>.
 
+This is a <sub>subscript</sub> text
+
+This is a <sup>superscript</sup> text
+
+This is an <ins>underlined</ins> text
+
 Subscript: H~2~O  
 Superscript: X^2^
 
@@ -29,6 +35,22 @@ Superscript: X^2^
 > This is a multi-line blockquote.
 >
 > > This is a nested blockquote containing a `code snippet` and **bold text**.
+
+### Alerts
+> [!NOTE]
+> Useful information that users should know, even when skimming content.
+
+> [!TIP]
+> Helpful advice for doing things better or more easily.
+
+> [!IMPORTANT]
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]
+> Urgent info that needs immediate user attention to avoid problems.
+
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
 
 ---
 
@@ -115,3 +137,8 @@ Here is a sentence with a footnote reference.[^1]
 This hidden content tests raw HTML rendering support within Markdown.
 
 </details>
+
+### Supported color models
+The background color is `#ffffff` for light mode and `#000000` for dark mode.
+`rgb(9, 105, 218)`
+`hsl(212, 92%, 45%)`

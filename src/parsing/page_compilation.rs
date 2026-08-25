@@ -6,7 +6,10 @@ use crate::{
     global_props::GlobalProperty,
     html::{sidebar_items::generate_sidebar_items, styling::Style, toc::generate_toc},
     page::Page,
-    parsing::{highlighting::highlight_html_blocks, minify::minify_html},
+    parsing::{
+        alerts::preprocess_markdown_alerts, color_swatch::add_color_swatches,
+        highlighting::highlight_html_blocks, minify::minify_html,
+    },
     utils::slugify::add_heading_ids,
     vault::Vault,
 };
@@ -28,6 +31,8 @@ impl Page {
                     gfm_task_list_item: true,
                     gfm_strikethrough: true,
                     gfm_autolink_literal: true,
+                    gfm_footnote_definition: true,
+                    gfm_label_start_footnote: true,
                     html_flow: true,
                     html_text: true,
                     ..Constructs::default()
@@ -72,8 +77,9 @@ impl Page {
             .collect();
         let md_path_str = clean_md_path.to_string_lossy().replace('\\', "/");
         let to_md = format!("{}{}", back_to_root, md_path_str);
+        let processed_text = preprocess_markdown_alerts(&self.text);
 
-        let raw_docs = markdown::to_html_with_options(&self.text, &options)
+        let raw_docs = markdown::to_html_with_options(&processed_text, &options)
             .map_err(|e| anyhow!("Error found during markdown parsing. Cause: {e}"))?;
         let docs = add_heading_ids(&raw_docs);
         let toc = if features.toc_sidebar {
@@ -168,6 +174,8 @@ impl Page {
             .replace("%__HOME_HREF__%", &prefix)
             .replace("%__SIDEBAR_SECTIONS__%", &sections_html)
             .replace("%__PAGINATION__%", &pagination_html);
-        Ok(minify_html(&highlight_html_blocks(&html)))
+        let highlighted = highlight_html_blocks(&html);
+        let with_swatches = add_color_swatches(&highlighted);
+        Ok(minify_html(&with_swatches))
     }
 }

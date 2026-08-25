@@ -30,12 +30,18 @@ impl Vault {
             eprintln!("Pages are empty. Did you chain correctly?");
         }
         let mut sections: Vec<SidebarSection> = Vec::new();
+
         for page in &self.pages {
-            if let Some(sec) = sections
-                .iter_mut()
-                .find(|s| s.title == page.metadata.category)
-            {
-                sec.items.push(page.metadata.clone());
+            let matched = sections
+                .last_mut()
+                .is_some_and(|sec| sec.title == page.metadata.category);
+
+            if matched {
+                sections
+                    .last_mut()
+                    .unwrap()
+                    .items
+                    .push(page.metadata.clone());
             } else {
                 sections.push(SidebarSection {
                     title: page.metadata.category.clone(),
@@ -43,6 +49,7 @@ impl Vault {
                 });
             }
         }
+
         self.sidebar_sections = sections;
         self
     }

@@ -20,6 +20,7 @@ pub struct PageMetadata {
     pub name: String,
     pub rel_html_path: String,
     pub category: Option<String>,
+    pub file_name: String,
 }
 impl Page {
     pub fn new(text: impl Into<String>, metadata: PageMetadata) -> Self {

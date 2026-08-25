@@ -1,9 +1,10 @@
 use crate::{
-    CONFIGURATION_FOLDER, IGNORE_FILE,
+    CONFIGURATION_FOLDER, IGNORE_FILE, ORDERING_FILE,
     config::Configuration,
     global_props::{GlobalProperty, css::GlobalCSS, font::GlobalFonts, js::GlobalJS},
     html::generate_global_elem,
     ignore::make_git_ignore,
+    page_ordering::PageOrderManifest,
     utils::crawler::collect_files,
     vault::Vault,
 };
@@ -37,6 +38,12 @@ pub fn parse_docs<P: AsRef<Path>>(config: Configuration, config_dir: P) -> Resul
         config_dir.parent().unwrap_or(&PathBuf::from(".")),
         &patterns,
     )?;
+
+    let order_man = if let Ok(data) = &fs::read_to_string(config_dir.join(ORDERING_FILE)) {
+        Some(PageOrderManifest::parse(data))
+    } else {
+        None
+    };
 
     let mut css = GlobalCSS::new();
     let mut js = GlobalJS::new();
@@ -87,7 +94,7 @@ pub fn parse_docs<P: AsRef<Path>>(config: Configuration, config_dir: P) -> Resul
         // .inside_main_elem("")
         .global_elem(generate_global_elem(&config.title, config.features.search))
         .set_pages(md_files, &config.md_path, &config.html_path)?
-        .sort_pages()
+        .sort_pages(order_man.as_ref())
         .set_neighbors()
         .set_sidebar_sections()
         .render_all(&config.html_path, &config.styling, &config.features)?;

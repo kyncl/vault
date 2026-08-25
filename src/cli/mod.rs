@@ -73,6 +73,11 @@ pub enum Modes {
         #[command(flatten)]
         flags: Flags,
     },
+    /// Update Your ordering to default settings
+    DefaultOrder {
+        #[command(flatten)]
+        flags: Flags,
+    },
 }
 
 #[derive(Debug, Args, PartialEq, Clone)]

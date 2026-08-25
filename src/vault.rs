@@ -1,14 +1,14 @@
-use std::path::Path;
-
 use anyhow::Result;
 use colored::*;
 use serde::Serialize;
+use std::path::Path;
 
 use crate::{
     features::Features,
     global_props::{css::GlobalCSS, font::GlobalFonts, js::GlobalJS},
     html::{sidebar::SidebarSection, styling::Style},
     page::Page,
+    page_ordering::PageOrderManifest,
 };
 
 #[derive(Serialize)]
@@ -103,37 +103,64 @@ impl Vault {
         Ok(())
     }
 
-    pub fn sort_pages(&mut self) -> &mut Self {
+    pub fn sort_pages(&mut self, manifest: Option<&PageOrderManifest>) -> &mut Self {
         if self.pages.is_empty() {
-            eprintln!("Pages are empty. Did you chain correctly?");
+            return self;
         }
-        self.pages.sort_by(|a, b| {
-            let is_priority = |name: &str| {
-                let lower = name.to_lowercase();
-                lower == "index" || lower == "overview"
+
+        let man = match manifest {
+            Some(m) => m,
+            None => return self,
+        };
+
+        let get_clean_name = |name: &str| -> String {
+            if let Some(idx) = name.rfind('.') {
+                name[..idx].to_lowercase()
+            } else {
+                name.to_lowercase()
+            }
+        };
+
+        let get_clean_cat = |cat: &Option<String>| -> Option<String> {
+            let cleaned = cat
+                .as_ref()
+                .map(|c| c.replace('\\', "/").trim_matches('/').to_lowercase())
+                .filter(|c| !c.is_empty())?;
+
+            if cleaned == "html" {
+                None
+            } else {
+                Some(cleaned)
+            }
+        };
+
+        self.pages.sort_by_cached_key(|page| {
+            let clean_name = get_clean_name(&page.metadata.file_name);
+            let clean_cat = get_clean_cat(&page.metadata.category);
+            let exact_path = match &clean_cat {
+                Some(cat) => format!("{}/{}", cat, clean_name),
+                None => clean_name.clone(),
+            };
+            let is_not_root = exact_path != "index";
+            let group_name = clean_cat.clone().unwrap_or_else(|| clean_name.clone());
+            let group_rank = man.get_rank(&group_name).unwrap_or(usize::MAX);
+            let file_rank = match man.get_rank(&exact_path) {
+                Some(rank) => rank,
+                None => {
+                    if !exact_path.ends_with("index"){
+                        eprintln!(
+                            "[{}]: The file '{}' is not defined in your ordering manifest. It will default to the bottom of its section.",
+                            "WARNING".yellow()
+                            ,exact_path
+                        );
+                    }
+                    usize::MAX
+                }
             };
 
-            let a_prio = is_priority(&a.metadata.name);
-            let b_prio = is_priority(&b.metadata.name);
-
-            if a.metadata.category == b.metadata.category {
-                if a_prio && !b_prio {
-                    return std::cmp::Ordering::Less;
-                } else if !a_prio && b_prio {
-                    return std::cmp::Ordering::Greater;
-                } else {
-                    return a.metadata.name.cmp(&b.metadata.name);
-                }
-            }
-
-            // Sort by category (None/root comes first)
-            match (&a.metadata.category, &b.metadata.category) {
-                (None, Some(_)) => std::cmp::Ordering::Less,
-                (Some(_), None) => std::cmp::Ordering::Greater,
-                (Some(c1), Some(c2)) => c1.cmp(c2),
-                (None, None) => unreachable!(),
-            }
+            (is_not_root, group_rank, group_name, file_rank, clean_name)
         });
+
         self
     }
 
