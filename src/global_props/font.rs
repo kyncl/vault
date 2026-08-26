@@ -28,8 +28,8 @@ impl GlobalFonts {
                 .unwrap_or("")
                 .to_lowercase();
             preloads.push_str(&format!(
-                "    <link rel=\"preload\" href=\"{asset_prefix}fonts/{file_name}\" as=\"font\" type=\"font/{ext}\" crossorigin>\n"
-            ));
+            r#"<link rel="preload" href="{asset_prefix}fonts/{file_name}" as="font" type="font/{ext}" crossorigin="anonymous">"#
+        ));
         }
         Ok(preloads)
     }

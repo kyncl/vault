@@ -8,7 +8,7 @@ use crate::{
     page::Page,
     parsing::{
         alerts::preprocess_markdown_alerts, color_swatch::add_color_swatches,
-        highlighting::highlight_html_blocks, minify::minify_html,
+        highlighting::highlight_html_blocks, katex::render_katex_in_html, minify::minify_html,
     },
     utils::slugify::add_heading_ids,
     vault::Vault,
@@ -33,6 +33,8 @@ impl Page {
                     gfm_autolink_literal: true,
                     gfm_footnote_definition: true,
                     gfm_label_start_footnote: true,
+                    math_flow: true,
+                    math_text: true,
                     html_flow: true,
                     html_text: true,
                     ..Constructs::default()
@@ -98,11 +100,16 @@ impl Page {
             vault.global.css.compile_cached()?,
             vault.global.css.compile_lazy(&asset_prefix)?
         );
-        let fonts = format!(
-            "{}\n{}",
-            vault.global.fonts.compile_cached()?,
-            vault.global.fonts.compile_lazy(&asset_prefix)?
-        );
+
+        // Currently fonts can be loaded from css with font
+        // face so it is kind of pointless to have global fonts
+        // let fonts = format!(
+        //     "{}\n{}",
+        //     vault.global.fonts.compile_cached()?,
+        //     vault.global.fonts.compile_lazy(&asset_prefix)?
+        // );
+        let fonts = "";
+
         let visible_markdown_btn = if features.view_raw_md {
             format!(
                 r#"<div class="raw-md"><a href="{to_md}" aria-label="to md file">Raw Markdown</a></div>"#
@@ -174,7 +181,8 @@ impl Page {
             .replace("%__HOME_HREF__%", &prefix)
             .replace("%__SIDEBAR_SECTIONS__%", &sections_html)
             .replace("%__PAGINATION__%", &pagination_html);
-        let highlighted = highlight_html_blocks(&html);
+        let katexed_html = render_katex_in_html(&html);
+        let highlighted = highlight_html_blocks(&katexed_html);
         let with_swatches = add_color_swatches(&highlighted);
         Ok(minify_html(&with_swatches))
     }

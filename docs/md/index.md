@@ -15,7 +15,11 @@ Setext Heading 2
 
 ## Typography & Inline Styles
 
-This paragraph demonstrates standard text formatting: **bold text**, *italicized text*, ***bold and italicized***, ~~strikethrough~~, and ==highlighted text==. You can also represent inline code like `const x = 42;` or keystrokes using <kbd>Ctrl</kbd> + <kbd>C</kbd>.
+This paragraph demonstrates standard text formatting:
+**bold text**, *italicized text*, ***bold and italicized***,
+~~strikethrough~~, and ==highlighted text==.
+You can also represent inline code like `const x = 42;`
+or keystrokes using <kbd>Ctrl</kbd> + <kbd>C</kbd>.
 
 This is a <sub>subscript</sub> text
 
@@ -142,3 +146,72 @@ This hidden content tests raw HTML rendering support within Markdown.
 The background color is `#ffffff` for light mode and `#000000` for dark mode.
 `rgb(9, 105, 218)`
 `hsl(212, 92%, 45%)`
+
+Here is a Markdown test suite for checking math rendering support.
+
+## Mathematical symbols from Latex
+
+### Inline Math
+
+* Standard inline formula: $$E = mc^2$$
+* Subscripts and exponents: $$x_{1}^2 + x_{2}^2 = r^2$$
+* Trigonometry: $$\sin^2(\theta) + \cos^2(\theta) = 1$$
+
+### Display (Block) Math
+
+Quadratic Formula: $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
+
+Blocked:
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$
+
+
+Definite Integral:
+$$\int_{a}^{b} f(x) \, dx = F(b) - F(a)$$
+
+Blocked:
+$$
+\int_{a}^{b} f(x) \, dx = F(b) - F(a)
+$$
+
+Summation and Limits:
+$$\lim_{n \to \infty} \sum_{k=1}^{n} \frac{1}{k^2} = \frac{\pi^2}{6}$$
+
+Blocked:
+$$
+\lim_{n \to \infty} \sum_{k=1}^{n} \frac{1}{k^2} = \frac{\pi^2}{6}
+$$
+
+### Multi-line Equations & Alignment
+
+$$
+\begin{aligned}
+(a + b)^2 &= (a + b)(a + b) \\
+&= a^2 + ab + ba + b^2 \\
+&= a^2 + 2ab + b^2
+\end{aligned}
+$$
+
+### Matrices & Vectors
+
+$$
+\mathbf{A} = \begin{bmatrix}
+a_{11} & a_{12} & a_{13} \\
+a_{21} & a_{22} & a_{23} \\
+a_{31} & a_{32} & a_{33}
+\end{bmatrix}
+$$
+
+### Greek Letters & Special Symbols
+
+* Greek letters: $$\alpha, \beta, \gamma, \delta, \epsilon, \theta, \lambda, \mu, \pi, \sigma, \phi, \omega$$
+* Operations & Sets: $$\forall x \in \mathbb{R}, \exists y : y > x \implies x \cap y \neq \emptyset$$
+
+### Math inside a Markdown Table
+
+| Category | Math Expression | Description |
+| :--- | :--- | :--- |
+| **Logarithm** | $$\log_b(xy) = \log_b(x) + \log_b(y)$$ | Product rule |
+| **Derivative** | $$\frac{d}{dx}\left(e^x\right) = e^x$$ | Exponential derivative |
+| **Vector Dot Product** | $$\vec{u} \cdot \vec{v} = \|\vec{u}\| \|\vec{v}\| \cos\theta$$ | Geometric definition |
