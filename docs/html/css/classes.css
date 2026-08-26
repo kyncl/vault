@@ -651,7 +651,7 @@ li.active::before {
 
 @media (max-width: 768px) {
     body {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         grid-template-areas:
             "header"
             "content"
