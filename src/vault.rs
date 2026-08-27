@@ -142,6 +142,7 @@ impl Vault {
                 None => clean_name.clone(),
             };
             let is_not_root = exact_path != "index";
+            let not_index = clean_name != "index";
             let group_name = clean_cat.clone().unwrap_or_else(|| clean_name.clone());
             let group_rank = man.get_rank(&group_name).unwrap_or(usize::MAX);
             let file_rank = match man.get_rank(&exact_path) {
@@ -150,15 +151,15 @@ impl Vault {
                     if !exact_path.ends_with("index"){
                         eprintln!(
                             "[{}]: The file '{}' is not defined in your ordering manifest. It will default to the bottom of its section.",
-                            "WARNING".yellow()
-                            ,exact_path
+                            "WARNING".yellow(),
+                            exact_path
                         );
                     }
                     usize::MAX
                 }
             };
 
-            (is_not_root, group_rank, group_name, file_rank, clean_name)
+            (is_not_root, group_rank, group_name, not_index, file_rank, clean_name)
         });
 
         self

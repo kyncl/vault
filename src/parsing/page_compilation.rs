@@ -155,12 +155,34 @@ impl Page {
             </html>"#,
             title = if self.metadata.name.to_lowercase() == "index" {
                 if let Some(cat) = &self.metadata.category {
-                    cat
+                    let mut chars = cat.chars();
+                    match chars.next() {
+                        Some(first) => {
+                            let mut capitalized = String::new();
+                            for c in first.to_uppercase() {
+                                capitalized.push(c);
+                            }
+                            capitalized.push_str(chars.as_str());
+                            capitalized
+                        }
+                        None => cat.clone(),
+                    }
                 } else {
-                    "Homepage"
+                    String::from("Homepage")
                 }
             } else {
-                &self.metadata.name
+                let mut chars = self.metadata.name.chars();
+                match chars.next() {
+                    Some(first) => {
+                        let mut capitalized = String::new();
+                        for c in first.to_uppercase() {
+                            capitalized.push(c);
+                        }
+                        capitalized.push_str(chars.as_str());
+                        capitalized
+                    }
+                    None => self.metadata.name.clone(),
+                }
             },
             global_elem = vault.global_elem,
             inside_main_elem = vault.inside_main_elem,
