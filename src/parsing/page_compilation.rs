@@ -132,7 +132,7 @@ impl Page {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>{title}</title>
                 <meta name="description" content="{dynamic_desc}">
-                <link rel="icon" type="image/x-icon" href="./icon.svg">
+                <link rel="icon" type="image/x-icon" href="{asset_prefix}icon.svg">
                 {search_index_script}
                 {styling}
                 {js}
