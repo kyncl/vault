@@ -18,4 +18,9 @@ ignore = "0.4"
 toml = "1.1.2"
 toml_edit = "0.25.12"
 dirs = "6.0.0"
+
+[target.'cfg(not(windows))'.dependencies]
 katex = "0.4.6"
+
+[target.'cfg(windows)'.dependencies]
+katex = { version = "0.4.6", default-features = false, features = ["duktape"] }

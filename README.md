@@ -48,6 +48,16 @@ through current page and name of the files and their category.
   - **Injected:** Bundled and embedded directly inside the HTML for maximum performance and zero extra requests.
   - **Lazy:** Linked efficiently inside the headers to load asynchronously. (Fonts are always loaded lazily).
   To make lazy file you must put `lazy__` prefix into file's name.
+- **KaTeX support:** You can add mathematical expressions to
+your documentation, and Vault will handle them without requiring
+any runtime JavaScript. All expressions are pre-compiled.
+
+> [!WARNING]
+> This functionality may have trouble rendering advanced
+> expressions on Windows builds due to the fallback JavaScript
+> engine (Duktape). If you are on Windows and need full KaTeX
+> feature support, it is recommended running Vault in a Docker
+> container.
 
 ---
 
