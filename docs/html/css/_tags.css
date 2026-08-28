@@ -169,6 +169,7 @@ li:has(> input[type="checkbox"]),
     gap: 0.6rem;
     margin-bottom: 0.5rem;
     line-height: 1.6;
+    flex-wrap: wrap;
 }
 
 input[type="checkbox"] {
