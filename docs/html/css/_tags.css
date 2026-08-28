@@ -129,7 +129,6 @@ table {
     margin: 2rem 0;
     font-size: 0.95rem;
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
     overflow: hidden;
 }
 
