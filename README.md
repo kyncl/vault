@@ -1,4 +1,10 @@
-# Vault
+<div align="center">
+  <h1>Vault</h1>
+  <picture align="center">
+    <img src="imgs/presentation.gif" alt="Presentation" width="75%" />
+  </picture>
+</div>
+
 Vault is a lightweight, blazing-fast documentation generator written in Rust. 
 It automatically transforms a directory of Markdown files into a fully responsive, 
 styled documentation site complete with automatic sidebar navigation, category grouping, 
