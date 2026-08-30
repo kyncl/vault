@@ -19,6 +19,7 @@ pub fn generate_sidebar_items(sections: &[SidebarSection], prefix: &str) -> Stri
             let title_link = match index_page {
                 Some(meta) => {
                     let href = format!("{}{}", prefix, meta.rel_html_path);
+                    let title = title.replace("/", "/ ");
                     format!(
                         r#"<a href="{}" class="sidebar-title-link">{}</a>"#,
                         href, title
