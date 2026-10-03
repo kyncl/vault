@@ -118,9 +118,7 @@ impl Page {
             String::new()
         };
         let made_with_vault = if features.support_vault {
-            format!(
-                r#"<div class="vault-supp"><a target="_blank" href="https://github.com/kyncl/vault" aria-label="Made with Vault">Made with Vault</a></div>"#
-            )
+            r#"<div class="vault-supp"><a target="_blank" href="https://github.com/kyncl/vault" aria-label="Made with Vault">Made with Vault</a></div>"#.to_string()
         } else {
             String::new()
         };
