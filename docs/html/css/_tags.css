@@ -85,6 +85,8 @@ a:hover {
 pre,
 code {
     font-family: var(--font-code);
+    display: block;
+    overflow-x: auto;
 }
 
 p code,

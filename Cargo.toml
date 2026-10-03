@@ -2,6 +2,18 @@
 name = "vault"
 version = "0.1.0"
 edition = "2024"
+authors = ["kyncl <145004616+kyncl@users.noreply.github.com>"]
+description = "Static site generator for parsing Markdown into a cohesive HTML documentation vault"
+repository = "https://github.com/kyncl/vault"
+license = "MIT"
+keywords = ["cli", "notes", "documentation-tool", "markdown"]
+categories = ["command-line-utilities", "documentation-tool"]
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+panic = "abort"
+strip = true
 
 [dependencies]
 markdown = "1.0.0"
@@ -16,7 +28,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 ignore = "0.4"
 toml = "1.1.2"
-toml_edit = "0.25.12"
+# toml_edit = "0.25.12"
 dirs = "6.0.0"
 
 [target.'cfg(not(windows))'.dependencies]
