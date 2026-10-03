@@ -7,6 +7,7 @@ search = true
 next_previous_btns = true
 view_raw_md = true
 toc_sidebar = true
+support_vault = true
 
 [styling]
 main_col = "Crimson"

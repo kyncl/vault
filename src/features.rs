@@ -8,6 +8,8 @@ pub struct Features {
     pub next_previous_btns: bool,
     pub view_raw_md: bool,
     pub toc_sidebar: bool,
+    /// Adds into footer 'Made with Vault' link
+    pub support_vault: bool,
 }
 
 impl Features {
@@ -17,6 +19,7 @@ impl Features {
             next_previous_btns: true,
             view_raw_md: true,
             toc_sidebar: true,
+            support_vault: false,
         }
     }
 
@@ -25,10 +28,11 @@ impl Features {
         let opt_nav = "Next/Previous page buttons";
         let opt_toc = "Table of Contents (TOC) sidebar";
         let opt_raw = "View raw Markdown button";
+        let opt_vault_support = "Add 'Made with Vault' into footer";
 
-        let options = vec![opt_search, opt_nav, opt_toc, opt_raw];
+        let options = vec![opt_search, opt_nav, opt_toc, opt_raw, opt_vault_support];
         let selected = MultiSelect::new("Which features do you want inside your Vault?", options)
-            .with_all_selected_by_default()
+            .with_default(&[0, 1, 2, 3])
             .prompt()?;
 
         Ok(Self {
@@ -36,6 +40,7 @@ impl Features {
             next_previous_btns: selected.contains(&opt_nav),
             toc_sidebar: selected.contains(&opt_toc),
             view_raw_md: selected.contains(&opt_raw),
+            support_vault: selected.contains(&opt_vault_support),
         })
     }
 }

@@ -1,6 +1,6 @@
 /* =================================================================
    1. Header, Navigation Bar & Search
-   ================================================================ */
+   ================================================================= */
 .back-link {
     grid-area: header;
     padding: 1rem 1.5rem;
@@ -181,7 +181,7 @@ body.sidebar-locked .search-box {
 
 /* =================================================================
    2. Sidebar Navigation
-   ================================================================ */
+   ================================================================= */
 .sidebar {
     grid-area: sidebar;
     position: sticky;
@@ -332,7 +332,7 @@ a.sidebar-title-link:not(.active):hover::before {
 
 /* =================================================================
    3. Main Content & TOC Sidebar
-   ================================================================ */
+   ================================================================= */
 .doc-content {
     grid-area: content;
     padding: 3rem 4rem;
@@ -463,7 +463,7 @@ li.active::before {
 
 /* =================================================================
    4. Pagination & Footer
-   ================================================================ */
+   ================================================================= */
 .pagination-nav {
     display: flex;
     justify-content: space-between;
@@ -519,31 +519,10 @@ li.active::before {
     text-transform: capitalize;
 }
 
-.raw-md {
-    z-index: 50;
-    grid-area: footer;
-    padding: 1.5rem;
-    text-align: right;
-    border-top: 1px solid var(--border);
-    background-color: var(--background);
-}
-
-.raw-md a {
-    font-family: var(--font-code);
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: color 0.2s ease;
-}
-
-.raw-md a:hover {
-    color: var(--foreground);
-}
-
 
 /* =================================================================
    5. Responsive Adjustments
-   ================================================================ */
+   ================================================================= */
 
 @media (max-width: 1200px) {
     body {

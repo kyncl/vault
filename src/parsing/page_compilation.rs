@@ -117,6 +117,13 @@ impl Page {
         } else {
             String::new()
         };
+        let made_with_vault = if features.support_vault {
+            format!(
+                r#"<div class="vault-supp"><a target="_blank" href="https://github.com/kyncl/vault" aria-label="Made with Vault">Made with Vault</a></div>"#
+            )
+        } else {
+            String::new()
+        };
 
         let search_index_script = if features.search {
             format!("<script>{}</script>", vault.generate_search_index())
@@ -150,7 +157,10 @@ impl Page {
                 <aside class="toc-sidebar">
                     {toc}
                 </aside>
-                {visible_markdown_btn} 
+                <footer>
+                    {visible_markdown_btn}
+                    {made_with_vault}
+                </footer>
             </body>
             </html>"#,
             title = if self.metadata.name.to_lowercase() == "index" {

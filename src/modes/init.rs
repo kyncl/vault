@@ -90,6 +90,7 @@ pub fn init_config(flags: Flags) -> Result<(Configuration, PathBuf)> {
             next_previous_btns: feat_args.next_previous_btns,
             view_raw_md: feat_args.view_raw_md,
             toc_sidebar: feat_args.toc_sidebar,
+            support_vault: feat_args.support_vault,
         }
     } else {
         Features::from_cli()?

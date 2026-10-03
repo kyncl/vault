@@ -39,6 +39,10 @@ pub struct FeatureArgs {
     /// Enable table of contents sidebar
     #[arg(short, long)]
     pub toc_sidebar: bool,
+
+    /// Adds link to Vault's GH into footer
+    #[arg(long)]
+    pub support_vault: bool,
 }
 
 #[derive(Args, Debug, Clone, PartialEq)]
